@@ -113,6 +113,10 @@ const NumberLineFractionApp = () => {
       // Round to avoid floating point precision issues.
       ticks.push(Math.round(tick * 1000) / 1000);
     }
+
+    // Create a Set of slot values for easy lookup
+    const slotValuesSet = new Set(currentQuestion.slots.map(slot => slot.value));
+
     return (
       <div className="number-line relative h-24 my-10">
         {/* Draw the main line */}
@@ -121,6 +125,10 @@ const NumberLineFractionApp = () => {
         {ticks.map((tick, i) => {
           const normalized = (tick - start) / (end - start);
           const leftPercent = 10 + normalized * 80;
+
+          // Check if this tick is a slot position (should be hidden)
+          const isSlotPosition = slotValuesSet.has(tick);
+
           return (
             <React.Fragment key={i}>
               <div
@@ -134,16 +142,19 @@ const NumberLineFractionApp = () => {
                   backgroundColor: '#6B46C1'
                 }}
               ></div>
-              <div
-                className="tick-label absolute font-bold text-lg text-purple-700"
-                style={{
-                  top: '15%',
-                  left: `${leftPercent}%`,
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                {formatTickLabel(tick)}
-              </div>
+              {/* Only render label if NOT a slot position */}
+              {!isSlotPosition && (
+                <div
+                  className="tick-label absolute font-bold text-lg text-purple-700"
+                  style={{
+                    top: '15%',
+                    left: `${leftPercent}%`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  {formatTickLabel(tick)}
+                </div>
+              )}
             </React.Fragment>
           );
         })}
@@ -156,8 +167,8 @@ const NumberLineFractionApp = () => {
             <div
               key={index}
               className={`fraction-slot absolute top-[60%] w-16 h-10 bg-pink-100 border-2 ${selectedFractions.selectedSlot === index
-                  ? 'border-purple-500 border-solid'
-                  : 'border-dashed border-pink-400'
+                ? 'border-purple-500 border-solid'
+                : 'border-dashed border-pink-400'
                 } rounded-xl flex justify-center items-center cursor-pointer shadow-sm transition-all hover:shadow`}
               style={{ left: `${leftPercent}%`, transform: 'translateX(-50%)' }}
               onClick={() => selectSlot(index)}
@@ -200,8 +211,8 @@ const NumberLineFractionApp = () => {
         <div className="flex justify-center">
           <button
             className={`button py-3 px-6 text-lg rounded-full transition-all ${checkDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-md hover:shadow-lg'
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-md hover:shadow-lg'
               }`}
             onClick={checkAnswers}
             disabled={checkDisabled}

@@ -1,5 +1,5 @@
 // CakeFractionApp.js - Endless Mode with Girly Theme
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Pool of cake questions with a variety of options
 const poolQuestions = [
@@ -114,7 +114,7 @@ const CakeFractionApp = () => {
         }
     };
 
-    // Render a cake with correct whole portions and accurately shaded fractional part
+    // Render a cake with correct whole portions and circular shaded fractional part
     const renderCake = (cake) => {
         // Render whole cake pieces
         const wholeCakes = [];
@@ -128,38 +128,46 @@ const CakeFractionApp = () => {
             );
         }
 
-        // Render the fractional part using computed clip paths for each slice
+        // Render the fractional part using CSS conic-gradient for circular shading
         let fractionPart = null;
         if (cake.fraction !== "0") {
             const [numerator, denominator] = cake.fraction.split('/').map(Number);
-            const slices = [];
+            const percentage = (numerator / denominator) * 100;
 
-            for (let i = 0; i < denominator; i++) {
-                const angleStart = (i * 360 / denominator) - 90;
-                const angleEnd = ((i + 1) * 360 / denominator) - 90;
-                const x1 = 50 + 50 * Math.cos(angleStart * Math.PI / 180);
-                const y1 = 50 + 50 * Math.sin(angleStart * Math.PI / 180);
-                const x2 = 50 + 50 * Math.cos(angleEnd * Math.PI / 180);
-                const y2 = 50 + 50 * Math.sin(angleEnd * Math.PI / 180);
-                const clipPath = `polygon(50% 50%, ${x1}% ${y1}%, ${x2}% ${y2}%)`;
-
-                slices.push(
-                    <div
-                        key={`${cake.id}-slice-${i}`}
-                        className="cake-slice absolute w-full h-full"
-                        style={{
-                            clipPath,
-                            background: i < numerator ? 'linear-gradient(to bottom right, #FBB6CE, #ED64A6)' : 'white',
-                            border: '1px solid #D1467D'
-                        }}
-                    ></div>
-                );
-            }
+            // Create conic gradient for the circular segment
+            const backgroundStyle = `conic-gradient(
+                from 0deg,
+                #ED64A6 0%,
+                #ED64A6 ${percentage}%,
+                white ${percentage}%,
+                white 100%
+            )`;
 
             fractionPart = (
-                <div className="cake relative w-16 h-16 rounded-full overflow-hidden shadow-sm"
-                    style={{ border: '2px solid #D1467D', background: 'white' }}>
-                    {slices}
+                <div
+                    className="cake relative w-16 h-16 rounded-full overflow-hidden shadow-sm"
+                    style={{
+                        border: '2px solid #D1467D',
+                        background: backgroundStyle
+                    }}
+                >
+                    {/* Add slices dividers as thin lines if needed */}
+                    {Array.from({ length: denominator }).map((_, i) => {
+                        const angle = (i * 360 / denominator);
+                        return (
+                            <div
+                                key={`${cake.id}-divider-${i}`}
+                                className="absolute top-0 bottom-0 left-1/2 w-px"
+                                style={{
+                                    height: '100%',
+                                    background: '#D1467D',
+                                    transform: `rotate(${angle}deg)`,
+                                    transformOrigin: 'bottom',
+                                    opacity: 0.6
+                                }}
+                            ></div>
+                        );
+                    })}
                 </div>
             );
         }

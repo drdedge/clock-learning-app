@@ -110,17 +110,23 @@ const ClockLearningApp = () => {
     const correctMinuteRotation = targetTime.minute * 6;
 
     return (
-        <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto p-6 bg-blue-50 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold text-blue-600 mb-4">Clock Learning Game</h1>
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto p-6 bg-pink-50 rounded-lg shadow-md">
+            <div className="relative w-full max-w-3xl mb-6">
+                <h1 className="text-3xl font-bold text-center text-purple-700 my-4">Clock Learning Game</h1>
+                {/* Decorative elements */}
+                <div className="absolute top-0 left-2 w-8 h-8 bg-pink-200 rounded-full opacity-50"></div>
+                <div className="absolute top-6 right-4 w-6 h-6 bg-purple-200 rounded-full opacity-60"></div>
+                <div className="absolute bottom-0 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-40"></div>
+            </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-md w-full mb-6">
-                <h2 className="text-xl font-semibold text-center mb-2">Set the clock to:</h2>
+            <div className="bg-white p-4 rounded-lg shadow-md w-full mb-6 border-2 border-pink-200">
+                <h2 className="text-xl font-semibold text-center mb-2 text-purple-700">Set the clock to:</h2>
                 <div className="flex justify-center text-2xl font-bold">
-                    <p className="bg-green-100 p-2 rounded">{timeToWords(targetTime.hour || 12, targetTime.minute)}</p>
+                    <p className="bg-pink-100 p-2 rounded text-purple-700">{timeToWords(targetTime.hour || 12, targetTime.minute)}</p>
                 </div>
             </div>
 
-            <div className="relative w-64 h-64 md:w-80 md:h-80 bg-white rounded-full shadow-lg border-4 border-blue-400 mb-6">
+            <div className="relative w-64 h-64 md:w-80 md:h-80 bg-white rounded-full shadow-lg border-4 border-pink-400 mb-6">
                 {/* Clock numbers */}
                 {[...Array(12)].map((_, i) => {
                     const rotation = i * 30;
@@ -132,7 +138,7 @@ const ClockLearningApp = () => {
                     return (
                         <span
                             key={i}
-                            className="absolute text-xl font-bold"
+                            className="absolute text-xl font-bold text-purple-700"
                             style={{
                                 left: `${x}%`,
                                 top: `${y}%`,
@@ -160,7 +166,7 @@ const ClockLearningApp = () => {
                     return (
                         <div
                             key={i}
-                            className="absolute bg-gray-400"
+                            className="absolute bg-pink-300"
                             style={{
                                 width: '1px',
                                 height: '1px',
@@ -176,11 +182,11 @@ const ClockLearningApp = () => {
                 })}
 
                 {/* Center dot */}
-                <div className="absolute w-4 h-4 bg-black rounded-full" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 30 }}></div>
+                <div className="absolute w-4 h-4 bg-purple-700 rounded-full" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 30 }}></div>
 
                 {/* Hour hand */}
                 <div
-                    className="absolute w-1 bg-black rounded-full"
+                    className="absolute w-1 bg-purple-700 rounded-full"
                     style={{
                         height: '30%',
                         left: '50%',
@@ -193,7 +199,7 @@ const ClockLearningApp = () => {
 
                 {/* Minute hand */}
                 <div
-                    className="absolute w-1 bg-black rounded-full"
+                    className="absolute w-1 bg-pink-600 rounded-full"
                     style={{
                         height: '40%',
                         left: '50%',
@@ -208,7 +214,7 @@ const ClockLearningApp = () => {
                 {showCorrect && (
                     <>
                         <div
-                            className="absolute w-1 bg-green-500 rounded-full"
+                            className="absolute w-1 bg-pink-500 rounded-full"
                             style={{
                                 height: '30%',
                                 left: '50%',
@@ -220,7 +226,7 @@ const ClockLearningApp = () => {
                             }}
                         />
                         <div
-                            className="absolute w-1 bg-green-500 rounded-full"
+                            className="absolute w-1 bg-pink-500 rounded-full"
                             style={{
                                 height: '40%',
                                 left: '50%',
@@ -238,18 +244,18 @@ const ClockLearningApp = () => {
             {/* Clock controls */}
             <div className="flex w-full justify-around mb-6">
                 <div className="flex flex-col items-center">
-                    <h3 className="font-bold mb-2">Hour Hand</h3>
+                    <h3 className="font-bold mb-2 text-purple-700">Hour Hand</h3>
                     <div className="flex space-x-2">
                         <button
                             onClick={() => adjustHour(-1)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-l"
+                            className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-l shadow-md"
                         >
                             ←
                         </button>
-                        <span className="bg-white py-2 px-4 border-t border-b font-bold">{userTime.hour || 12}</span>
+                        <span className="bg-white py-2 px-4 border-t border-b border-pink-300 font-bold text-purple-700">{userTime.hour || 12}</span>
                         <button
                             onClick={() => adjustHour(1)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r"
+                            className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-r shadow-md"
                         >
                             →
                         </button>
@@ -257,18 +263,18 @@ const ClockLearningApp = () => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                    <h3 className="font-bold mb-2">Minute Hand</h3>
+                    <h3 className="font-bold mb-2 text-purple-700">Minute Hand</h3>
                     <div className="flex space-x-2">
                         <button
                             onClick={() => adjustMinute(-5)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-l"
+                            className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-l shadow-md"
                         >
                             ←
                         </button>
-                        <span className="bg-white py-2 px-4 border-t border-b font-bold">{userTime.minute.toString().padStart(2, '0')}</span>
+                        <span className="bg-white py-2 px-4 border-t border-b border-pink-300 font-bold text-purple-700">{userTime.minute.toString().padStart(2, '0')}</span>
                         <button
                             onClick={() => adjustMinute(5)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r"
+                            className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-r shadow-md"
                         >
                             →
                         </button>
@@ -277,7 +283,7 @@ const ClockLearningApp = () => {
             </div>
 
             <div className="text-xl mb-4 text-center">
-                <span className="text-lg font-bold">{timeToWords(userTime.hour || 12, userTime.minute)}</span>
+                <span className="text-lg font-bold text-purple-700">{timeToWords(userTime.hour || 12, userTime.minute)}</span>
             </div>
 
             {feedback && (
@@ -289,25 +295,31 @@ const ClockLearningApp = () => {
             <div className="flex space-x-4 mb-6">
                 <button
                     onClick={checkAnswer}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg"
                 >
                     Check Answer
                 </button>
                 <button
                     onClick={generateNewTime}
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg"
                 >
                     New Question
                 </button>
+                <button
+                    onClick={showAnswer}
+                    className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg"
+                >
+                    Show Answer
+                </button>
             </div>
 
-            <div className="bg-blue-100 p-4 rounded-lg shadow w-full text-center">
-                <p className="text-lg">
-                    Score: <span className="font-bold text-green-600">{score}</span> / {attempts}
+            <div className="bg-pink-100 p-4 rounded-lg shadow-md w-full text-center border-2 border-pink-200">
+                <p className="text-lg text-purple-700">
+                    Score: <span className="font-bold text-pink-600">{score}</span> / {attempts}
                 </p>
             </div>
 
-            <div className="mt-6 text-sm text-gray-600">
+            <div className="mt-6 text-sm text-pink-600">
                 <p>Use the arrow buttons to adjust the hour and minute hands.</p>
             </div>
         </div>
