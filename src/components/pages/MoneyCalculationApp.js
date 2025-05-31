@@ -149,6 +149,7 @@ function MoneyCalculationApp() {
     // Initialize with first problem
     useEffect(() => {
         generateProblem();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (!problem) return null;

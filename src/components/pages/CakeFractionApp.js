@@ -1,5 +1,5 @@
 // CakeFractionApp.js - Endless Mode with Girly Theme
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PageWrapper from '../shared/PageWrapper';
 
 // Pool of cake questions with a variety of options
