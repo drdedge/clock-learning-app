@@ -1,5 +1,6 @@
 // CakeFractionApp.js - Endless Mode with Girly Theme
 import React, { useState, useEffect } from 'react';
+import PageWrapper from '../shared/PageWrapper';
 
 // Pool of cake questions with a variety of options
 const poolQuestions = [
@@ -191,17 +192,19 @@ const CakeFractionApp = () => {
         );
     };
 
-    // Render the main content
-    const renderContent = () => {
-        const question = currentQuestion;
+    return (
+        <PageWrapper title="Cake Fractions">
+            {/* Display current score */}
+            <div className="score-container mb-5">
+                <p className="text-center text-xl text-purple-700">Score: {correctAnswers}</p>
+            </div>
 
-        return (
-            <>
+            <div className="container max-w-3xl w-full bg-white rounded-3xl p-6 shadow-lg border-2 border-pink-200">
                 <h2 className="text-center text-2xl font-bold text-purple-700">Matching Cakes!</h2>
                 <p className="text-center mb-4 text-pink-600">Find the cakes that show the same amounts!</p>
 
                 <div className="cake-container flex justify-center flex-wrap gap-5 my-8">
-                    {question.cakes.map(cake => renderCake(cake))}
+                    {currentQuestion.cakes.map(cake => renderCake(cake))}
                 </div>
 
                 <div className={`feedback text-center text-xl min-h-10 ${feedback.includes('Great') ? 'text-green-600' : 'text-red-500'}`}>
@@ -217,29 +220,8 @@ const CakeFractionApp = () => {
                         Check Matches
                     </button>
                 </div>
-            </>
-        );
-    };
-
-    return (
-        <div className="flex flex-col items-center">
-            <div className="relative w-full max-w-3xl mb-6">
-                <h1 className="text-3xl font-bold text-center text-purple-700 my-4">Cake Fractions</h1>
-                {/* Decorative elements */}
-                <div className="absolute top-0 left-2 w-8 h-8 bg-pink-200 rounded-full opacity-50"></div>
-                <div className="absolute top-6 right-4 w-6 h-6 bg-purple-200 rounded-full opacity-60"></div>
-                <div className="absolute bottom-0 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-40"></div>
             </div>
-
-            {/* Display current score */}
-            <div className="score-container mb-5">
-                <p className="text-center text-xl text-purple-700">Score: {correctAnswers}</p>
-            </div>
-
-            <div className="container max-w-3xl w-full bg-white rounded-3xl p-6 shadow-lg border-2 border-pink-200">
-                {renderContent()}
-            </div>
-        </div>
+        </PageWrapper>
     );
 };
 

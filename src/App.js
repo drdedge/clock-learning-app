@@ -1,24 +1,13 @@
 // App.js - Main application with navigation and girly theme
 import React, { useState } from 'react';
-import NumberLineFractionApp from './NumberLineFractionApp';
-import CakeFractionApp from './CakeFractionApp';
-import ClockLearningApp from './ClockLearningApp';
-
-// Smiley face logo component
-const SmileyLogo = () => (
-  <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-300 rounded-full flex items-center justify-center mr-3 shadow-md">
-    <div className="relative w-8 h-5">
-      {/* Eyes */}
-      <div className="absolute w-1.5 h-1.5 bg-purple-800 rounded-full" style={{ top: '0', left: '1px' }}></div>
-      <div className="absolute w-1.5 h-1.5 bg-purple-800 rounded-full" style={{ top: '0', right: '1px' }}></div>
-      {/* Smile */}
-      <div className="absolute w-6 h-3 border-b-2 border-purple-800 rounded-b-full" style={{ bottom: '0', left: '1px' }}></div>
-    </div>
-  </div>
-);
+import { PAGES } from './utils/pageConfig';
+import SmileyLogo from './components/shared/SmileyLogo';
 
 function App() {
-  const [currentApp, setCurrentApp] = useState('numberline'); // Default to number line fractions
+  const [currentPageId, setCurrentPageId] = useState(PAGES[0].id);
+
+  const currentPage = PAGES.find(page => page.id === currentPageId);
+  const CurrentComponent = currentPage?.component;
 
   return (
     <div className="App font-comic bg-pink-50 min-h-screen">
@@ -29,32 +18,24 @@ function App() {
             <h1 className="text-2xl font-bold">Kids Learning App</h1>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            <button
-              className={`px-4 py-2 rounded-full transition-all ${currentApp === 'numberline' ? 'bg-pink-700 shadow-inner' : 'hover:bg-pink-600'}`}
-              onClick={() => setCurrentApp('numberline')}
-            >
-              Number Line Fractions
-            </button>
-            <button
-              className={`px-4 py-2 rounded-full transition-all ${currentApp === 'cake' ? 'bg-pink-700 shadow-inner' : 'hover:bg-pink-600'}`}
-              onClick={() => setCurrentApp('cake')}
-            >
-              Cake Fractions
-            </button>
-            <button
-              className={`px-4 py-2 rounded-full transition-all ${currentApp === 'clock' ? 'bg-pink-700 shadow-inner' : 'hover:bg-pink-600'}`}
-              onClick={() => setCurrentApp('clock')}
-            >
-              Clock
-            </button>
+            {PAGES.map(page => (
+              <button
+                key={page.id}
+                className={`px-4 py-2 rounded-full transition-all ${currentPageId === page.id
+                    ? 'bg-pink-700 shadow-inner'
+                    : 'hover:bg-pink-600'
+                  }`}
+                onClick={() => setCurrentPageId(page.id)}
+              >
+                {page.name}
+              </button>
+            ))}
           </div>
         </div>
       </nav>
 
       <div className="container mx-auto p-4">
-        {currentApp === 'numberline' && <NumberLineFractionApp />}
-        {currentApp === 'cake' && <CakeFractionApp />}
-        {currentApp === 'clock' && <ClockLearningApp />}
+        {CurrentComponent && <CurrentComponent />}
       </div>
 
       <footer className="text-center p-4 text-pink-700 text-sm">

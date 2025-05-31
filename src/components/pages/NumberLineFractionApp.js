@@ -1,5 +1,6 @@
 // NumberLineFractionApp.js - Endless Mode with Dynamic Number Lines & Girly Theme
 import React, { useState } from 'react';
+import PageWrapper from '../shared/PageWrapper';
 
 // Helper function to format a number into a mixed number string (for common fractions)
 const formatTickLabel = (num) => {
@@ -181,10 +182,14 @@ const NumberLineFractionApp = () => {
     );
   };
 
-  // Render the full content including number line, feedback, options, and check button.
-  const renderContent = () => {
-    return (
-      <>
+  return (
+    <PageWrapper title="Number Line Fractions">
+      {/* Display the current score */}
+      <div className="score-container mb-5">
+        <p className="text-center text-xl text-purple-700">Score: {correctAnswers}</p>
+      </div>
+
+      <div className="container max-w-3xl w-full bg-white rounded-3xl p-6 shadow-lg border-2 border-pink-200">
         <h2 className="text-center text-2xl font-bold text-purple-700">Where does each fraction go?</h2>
         <p className="text-center mb-4 text-pink-600">
           Click on a blank spot, then click on a fraction to place it!
@@ -220,29 +225,8 @@ const NumberLineFractionApp = () => {
             Check Answer
           </button>
         </div>
-      </>
-    );
-  };
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-full max-w-3xl mb-6">
-        <h1 className="text-3xl font-bold text-center text-purple-700 my-4">Number Line Fractions</h1>
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-2 w-8 h-8 bg-pink-200 rounded-full opacity-50"></div>
-        <div className="absolute top-6 right-4 w-6 h-6 bg-purple-200 rounded-full opacity-60"></div>
-        <div className="absolute bottom-0 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-40"></div>
       </div>
-
-      {/* Display the current score */}
-      <div className="score-container mb-5">
-        <p className="text-center text-xl text-purple-700">Score: {correctAnswers}</p>
-      </div>
-
-      <div className="container max-w-3xl w-full bg-white rounded-3xl p-6 shadow-lg border-2 border-pink-200">
-        {renderContent()}
-      </div>
-    </div>
+    </PageWrapper>
   );
 };
 
