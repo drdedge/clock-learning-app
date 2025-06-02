@@ -3,7 +3,6 @@ on:
   push:
     branches: [ main ]
 
-# Add permissions section
 permissions:
   contents: write
   pages: write
@@ -22,7 +21,7 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm ci
+      run: npm install --legacy-peer-deps
     
     - name: Build
       run: npm run build
