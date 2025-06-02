@@ -140,9 +140,11 @@ export const symmetry = () => {
 };
 
 // Export all generators for this category
-export default {
+const shapesGenerators = {
     shape2DProperties,
     shape3DProperties,
     shapeIdentification,
     symmetry
 };
+
+export default shapesGenerators;

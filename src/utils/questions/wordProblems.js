@@ -107,8 +107,10 @@ export const comparisonProblem = () => {
 };
 
 // Export all generators for this category
-export default {
+const wordProblemsGenerators = {
     simpleAdditionStory,
     subtractionStory,
     comparisonProblem
 };
+
+export default wordProblemsGenerators;

@@ -62,7 +62,7 @@ export const expandedForm = () => {
 
 export const comparingNumbers = () => {
     const num1 = Math.floor(Math.random() * 90) + 10;
-    const num2 = Math.floor(Math.random() * 90) + 10;
+    let num2 = Math.floor(Math.random() * 90) + 10;
     
     // Ensure numbers are different
     if (num1 === num2) {
@@ -115,9 +115,11 @@ export const roundingNumbers = () => {
 };
 
 // Export all generators for this category
-export default {
+const placeValueGenerators = {
     tensAndOnes,
     expandedForm,
     comparingNumbers,
     roundingNumbers
 };
+
+export default placeValueGenerators;

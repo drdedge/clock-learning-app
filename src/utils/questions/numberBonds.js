@@ -131,10 +131,12 @@ export const missingNumber = () => {
 };
 
 // Export all generators for this category
-export default {
+const numberBondsGenerators = {
     numberBondsTo10,
     numberBondsTo20,
     numberBondsTo50,
     numberBondsTo100,
     missingNumber
 };
+
+export default numberBondsGenerators;

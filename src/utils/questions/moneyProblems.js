@@ -90,8 +90,10 @@ export const savingMoneyProblem = () => {
 };
 
 // Export all generators for this category
-export default {
+const moneyProblemsGenerators = {
     moneyChangeProblem,
     totalCostProblem,
     savingMoneyProblem
 };
+
+export default moneyProblemsGenerators;

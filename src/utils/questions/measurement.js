@@ -138,10 +138,12 @@ export const comparingMeasurements = () => {
 };
 
 // Export all generators for this category
-export default {
+const measurementGenerators = {
     measurementComparison,
     timeEstimation,
     massComparison,
     unitConversion,
     comparingMeasurements
 };
+
+export default measurementGenerators;

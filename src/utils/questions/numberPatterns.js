@@ -115,7 +115,7 @@ export const skipCountingPattern = () => {
 };
 
 // Export all generators for this category
-export default {
+const numberPatternsGenerators = {
     constantAddition,
     constantSubtraction,
     alternatingPattern,
@@ -124,3 +124,5 @@ export default {
     fibonacciLikePattern,
     skipCountingPattern
 };
+
+export default numberPatternsGenerators;

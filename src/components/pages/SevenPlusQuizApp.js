@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import PageWrapper from '../shared/PageWrapper';
@@ -15,7 +15,7 @@ const SevenPlusQuizApp = () => {
     const [answerTimes, setAnswerTimes] = useState({});
 
     // Generate questions based on focus mode
-    const generateQuestions = () => {
+    const generateQuestions = useCallback(() => {
         const questionCount = 20;
         const generatedQuestions = [];
 
@@ -33,7 +33,7 @@ const SevenPlusQuizApp = () => {
         }
 
         return generatedQuestions;
-    };
+    }, [focusMode]);
 
     // Initialize questions on mount and when focus mode changes
     useEffect(() => {
@@ -44,7 +44,7 @@ const SevenPlusQuizApp = () => {
         setInputValue('');
         setAnswerTimes({});
         setQuestionStartTime(Date.now());
-    }, [focusMode]);
+    }, [focusMode, generateQuestions]);
 
     // Update question start time when navigating
     useEffect(() => {

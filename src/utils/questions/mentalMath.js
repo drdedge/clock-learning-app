@@ -165,7 +165,7 @@ export const nearDoubles = () => {
 };
 
 // Export all generators for this category
-export default {
+const mentalMathGenerators = {
     multiplicationAsRepeatedAddition,
     doublingNumbers,
     halvingNumbers,
@@ -174,3 +174,5 @@ export default {
     countingInMultiples,
     nearDoubles
 };
+
+export default mentalMathGenerators;
