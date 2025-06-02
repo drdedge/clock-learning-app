@@ -10,7 +10,10 @@
       "Bash(git pull:*)",
       "Bash(git branch:*)",
       "Bash(npm run build:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(npm install)"
     ],
     "deny": []
   }
