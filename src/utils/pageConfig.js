@@ -4,6 +4,7 @@ import NumberLineFractionApp from '../components/pages/NumberLineFractionApp';
 import CakeFractionApp from '../components/pages/CakeFractionApp';
 import ClockLearningApp from '../components/pages/ClockLearningApp';
 import MoneyCalculationApp from '../components/pages/MoneyCalculationApp';
+import SevenPlusQuizApp from '../components/pages/SevenPlusQuizApp';
 
 export const PAGES = [
     {
@@ -25,6 +26,11 @@ export const PAGES = [
         id: 'money',
         name: 'Money Problems',
         component: MoneyCalculationApp
+    },
+    {
+        id: 'mathpractice',
+        name: '7+ Math Practice',
+        component: SevenPlusQuizApp
     }
     // Add new pages here!
 ];
