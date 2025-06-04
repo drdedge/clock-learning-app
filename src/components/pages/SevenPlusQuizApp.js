@@ -319,7 +319,7 @@ const SevenPlusQuizApp = () => {
 
     return (
         <PageWrapper>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl w-full mx-auto">
                 <div className="bg-white/90 backdrop-blur rounded-3xl shadow-2xl p-8 border-4 border-pink-200">
                     {/* Header with decorative elements */}
                     <div className="relative mb-6">
@@ -380,7 +380,7 @@ const SevenPlusQuizApp = () => {
                     </div>
 
                     {/* Question Display with decorative border */}
-                    <div className="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-6 mb-6 border-2 border-purple-200 shadow-lg relative overflow-hidden min-h-48 flex flex-col justify-between">
+                    <div className="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-6 mb-6 border-2 border-purple-200 shadow-lg relative overflow-hidden min-h-48 flex flex-col justify-between w-full">
                         <div className="absolute top-0 right-0 text-pink-200 opacity-30">
                             <Star className="w-24 h-24" />
                         </div>
