@@ -127,12 +127,28 @@ export const handshakeProblem = () => {
     };
 };
 
+export const barChartAeroplanes = () => {
+    const options = ["Alice", "Ben", "Cara"];
+    return {
+        question: "Who made the most paper aeroplanes?",
+        image: "/images/bar-chart-aeroplanes.svg",
+        options,
+        answer: 1,
+        correctAnswer: "Ben",
+        category: "Word Problems",
+        skill: "Interpreting bar charts",
+        tip: "Look for the tallest bar",
+        inputType: "multiple-choice"
+    };
+};
+
 // Export all generators for this category
 const wordProblemsGenerators = {
     simpleAdditionStory,
     subtractionStory,
     comparisonProblem,
-    handshakeProblem
+    handshakeProblem,
+    barChartAeroplanes
 };
 
 export default wordProblemsGenerators;

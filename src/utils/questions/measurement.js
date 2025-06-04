@@ -163,6 +163,21 @@ export const comparingMeasurements = () => {
     };
 };
 
+export const pencilLengthImage = () => {
+    const options = ["5cm", "10cm", "15cm", "20cm"];
+    return {
+        question: "How long is the pencil in the picture?",
+        image: "/images/pencil-ruler.svg",
+        options,
+        answer: 2,
+        correctAnswer: "15cm",
+        category: "Measurement",
+        skill: "Reading a ruler",
+        tip: "Count the centimetre marks on the ruler",
+        inputType: "multiple-choice"
+    };
+};
+
 // Export all generators for this category
 const measurementGenerators = {
     measurementComparison,
@@ -171,7 +186,8 @@ const measurementGenerators = {
     unitConversion,
     centimetersInMeters,
     metersInKilometers,
-    comparingMeasurements
+    comparingMeasurements,
+    pencilLengthImage
 };
 
 export default measurementGenerators;
