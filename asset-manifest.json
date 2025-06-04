@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/clock-learning-app/static/css/main.d622df59.css",
-    "main.js": "/clock-learning-app/static/js/main.919350eb.js",
+    "main.css": "/clock-learning-app/static/css/main.dcb4dfb6.css",
+    "main.js": "/clock-learning-app/static/js/main.1f48e2a8.js",
     "index.html": "/clock-learning-app/index.html",
-    "main.d622df59.css.map": "/clock-learning-app/static/css/main.d622df59.css.map",
-    "main.919350eb.js.map": "/clock-learning-app/static/js/main.919350eb.js.map"
+    "main.dcb4dfb6.css.map": "/clock-learning-app/static/css/main.dcb4dfb6.css.map",
+    "main.1f48e2a8.js.map": "/clock-learning-app/static/js/main.1f48e2a8.js.map"
   },
   "entrypoints": [
-    "static/css/main.d622df59.css",
-    "static/js/main.919350eb.js"
+    "static/css/main.dcb4dfb6.css",
+    "static/js/main.1f48e2a8.js"
   ]
 }
