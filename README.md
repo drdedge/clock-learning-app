@@ -1,5 +1,33 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Project Overview
+
+The project is a suite of educational mini-apps built with React and Tailwind CSS. It currently includes Clock Learning, Money Calculation, Cake Fractions, Number Line Fractions, and a 7+ Math Practice quiz.
+
+### General Structure
+- Navigation is configured in `src/utils/pageConfig.js` which maps page IDs to their React components.
+- `src/App.js` renders navigation buttons and loads the selected component.
+- Each mini-app lives under `src/components/pages/` while shared elements are in `src/components/shared/`.
+
+### Question System
+- The Math Practice quiz uses modular generators located in `src/utils/questions`.
+- `index.js` imports all categories and filters generators for focus modes.
+- The directory contains word problems, money problems, patterns, place value, shapes, measurement, number bonds, and mental math.
+- See `src/utils/questions/README.md` for instructions on creating new generators.
+
+### Styling and Theme
+- Styling relies on Tailwind with a pink/purple palette as described in `CLAUDE.md`.
+- A custom "Comic Neue" font is loaded in `src/index.css` via the `font-comic` class.
+
+### Running and Deploying
+- Use `npm start`, `npm test`, and `npm run build` during development.
+- Deployments occur with `npm run deploy` through a GitHub Actions workflow.
+
+### Pointers for New Contributors
+1. Add a new mini-app under `src/components/pages/` and register it in `src/utils/pageConfig.js`.
+2. Extend the quiz system by adding generators per `src/utils/questions/README.md`.
+3. Follow the styling guidelines and reuse `PageWrapper` for layout.
+4. Check `.github/workflows/deploy.yml` to understand deployment.
 ## Available Scripts
 
 In the project directory, you can run:
