@@ -72,7 +72,7 @@ Key dependencies:
 - React 19.0.0
 - Tailwind CSS (via cra-template-tailwindcss)
 - lucide-react 0.460.0 (for icons)
-- recharts 2.14.1 (for progress visualization)
+- recharts 2.15.3 (for progress visualization)
 
 ## Deployment
 
