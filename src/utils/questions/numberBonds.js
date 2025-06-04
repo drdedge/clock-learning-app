@@ -130,13 +130,41 @@ export const missingNumber = () => {
     };
 };
 
+export const balancingEquation = () => {
+    const a = Math.floor(Math.random() * 10) + 5; // 5-14
+    const b = Math.floor(Math.random() * 10) + 5;
+    const c = Math.floor(Math.random() * 8) + 2;
+    const type = Math.random() > 0.5;
+
+    let question, answer;
+    if (type) {
+        // a + b = ___ + c
+        question = `${a} + ${b} = ___ + ${c}`;
+        answer = a + b - c;
+    } else {
+        // a + ___ = b + c
+        question = `${a} + ___ = ${b} + ${c}`;
+        answer = b + c - a;
+    }
+
+    return {
+        question: `Solve: ${question}`,
+        answer,
+        category: "Number Bonds",
+        skill: "Balancing equations",
+        tip: "Both sides of the equation must have the same total",
+        inputType: "number"
+    };
+};
+
 // Export all generators for this category
 const numberBondsGenerators = {
     numberBondsTo10,
     numberBondsTo20,
     numberBondsTo50,
     numberBondsTo100,
-    missingNumber
+    missingNumber,
+    balancingEquation
 };
 
 export default numberBondsGenerators;

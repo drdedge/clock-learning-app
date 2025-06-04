@@ -7,6 +7,7 @@ import shapes from './shapes';
 import measurement from './measurement';
 import numberBonds from './numberBonds';
 import mentalMath from './mentalMath';
+import fractions from './fractions';
 
 // Combine all generators into a single object
 export const questionGenerators = {
@@ -30,9 +31,12 @@ export const questionGenerators = {
     
     // Number Bonds
     ...numberBonds,
-    
+
     // Mental Math
-    ...mentalMath
+    ...mentalMath,
+
+    // Fractions
+    ...fractions
 };
 
 // Category mappings for focus modes
@@ -44,7 +48,8 @@ export const categoryGenerators = {
     shapes: Object.keys(shapes),
     measurement: Object.keys(measurement),
     numberBonds: Object.keys(numberBonds),
-    mentalMath: Object.keys(mentalMath)
+    mentalMath: Object.keys(mentalMath),
+    fractions: Object.keys(fractions)
 };
 
 // Get generators for a specific focus mode
@@ -66,6 +71,8 @@ export const getGeneratorsForFocusMode = (focusMode) => {
             return categoryGenerators.moneyProblems;
         case 'mentalMath':
             return categoryGenerators.mentalMath;
+        case 'fractions':
+            return categoryGenerators.fractions;
         default:
             // Return all generators for 'all' mode
             return Object.keys(questionGenerators);
@@ -81,5 +88,6 @@ export {
     shapes,
     measurement,
     numberBonds,
-    mentalMath
+    mentalMath,
+    fractions
 };

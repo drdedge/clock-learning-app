@@ -361,6 +361,7 @@ const SevenPlusQuizApp = () => {
                             <option value="measurement">Measurement & Units</option>
                             <option value="money">Money & Change</option>
                             <option value="mentalMath">Mental Math Strategies</option>
+                            <option value="fractions">Fractions</option>
                         </select>
                     </div>
 

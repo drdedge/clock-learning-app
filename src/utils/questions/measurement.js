@@ -98,6 +98,32 @@ export const unitConversion = () => {
     };
 };
 
+export const centimetersInMeters = () => {
+    const meters = Math.floor(Math.random() * 9) + 2; // 2-10m
+
+    return {
+        question: `How many centimeters are in ${meters} meters?`,
+        answer: meters * 100,
+        category: "Measurement",
+        skill: "Unit conversion",
+        tip: "Multiply the meters by 100 to get centimeters",
+        inputType: "number"
+    };
+};
+
+export const metersInKilometers = () => {
+    const km = Math.floor(Math.random() * 9) + 1; // 1-9km
+
+    return {
+        question: `How many meters are in ${km} kilometers?`,
+        answer: km * 1000,
+        category: "Measurement",
+        skill: "Unit conversion",
+        tip: "1km = 1000m",
+        inputType: "number"
+    };
+};
+
 export const comparingMeasurements = () => {
     const comparisons = [
         {
@@ -137,13 +163,31 @@ export const comparingMeasurements = () => {
     };
 };
 
+export const pencilLengthImage = () => {
+    const options = ["5cm", "10cm", "15cm", "20cm"];
+    return {
+        question: "How long is the pencil in the picture?",
+        image: "/images/pencil-ruler.svg",
+        options,
+        answer: 2,
+        correctAnswer: "15cm",
+        category: "Measurement",
+        skill: "Reading a ruler",
+        tip: "Count the centimetre marks on the ruler",
+        inputType: "multiple-choice"
+    };
+};
+
 // Export all generators for this category
 const measurementGenerators = {
     measurementComparison,
     timeEstimation,
     massComparison,
     unitConversion,
-    comparingMeasurements
+    centimetersInMeters,
+    metersInKilometers,
+    comparingMeasurements,
+    pencilLengthImage
 };
 
 export default measurementGenerators;
