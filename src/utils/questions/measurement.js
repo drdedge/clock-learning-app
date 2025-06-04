@@ -98,6 +98,32 @@ export const unitConversion = () => {
     };
 };
 
+export const centimetersInMeters = () => {
+    const meters = Math.floor(Math.random() * 9) + 2; // 2-10m
+
+    return {
+        question: `How many centimeters are in ${meters} meters?`,
+        answer: meters * 100,
+        category: "Measurement",
+        skill: "Unit conversion",
+        tip: "Multiply the meters by 100 to get centimeters",
+        inputType: "number"
+    };
+};
+
+export const metersInKilometers = () => {
+    const km = Math.floor(Math.random() * 9) + 1; // 1-9km
+
+    return {
+        question: `How many meters are in ${km} kilometers?`,
+        answer: km * 1000,
+        category: "Measurement",
+        skill: "Unit conversion",
+        tip: "1km = 1000m",
+        inputType: "number"
+    };
+};
+
 export const comparingMeasurements = () => {
     const comparisons = [
         {
@@ -143,6 +169,8 @@ const measurementGenerators = {
     timeEstimation,
     massComparison,
     unitConversion,
+    centimetersInMeters,
+    metersInKilometers,
     comparingMeasurements
 };
 

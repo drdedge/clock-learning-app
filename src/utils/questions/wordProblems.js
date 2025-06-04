@@ -39,6 +39,12 @@ const NAMES = [
     "Ben", "Amy", "Leo", "Eva", "Max", "Isla", "Sam", "Ella"
 ];
 
+const HANDSHAKE_CONTEXTS = [
+    { place: "at a party", group: "friends" },
+    { place: "on a team", group: "players" },
+    { place: "in a meeting", group: "people" }
+];
+
 export const simpleAdditionStory = () => {
     const scenario = SCENARIOS.addition[Math.floor(Math.random() * SCENARIOS.addition.length)];
     const item = scenario.items[Math.floor(Math.random() * scenario.items.length)];
@@ -106,11 +112,27 @@ export const comparisonProblem = () => {
     };
 };
 
+export const handshakeProblem = () => {
+    const context = HANDSHAKE_CONTEXTS[Math.floor(Math.random() * HANDSHAKE_CONTEXTS.length)];
+    const friends = Math.floor(Math.random() * 3) + 4; // 4-6
+    const handshakes = (friends * (friends - 1)) / 2;
+
+    return {
+        question: `There are ${friends} ${context.group} ${context.place}. If each one shakes hands with every other once, how many handshakes happen in total?`,
+        answer: handshakes,
+        category: "Word Problems",
+        skill: "Counting combinations",
+        tip: "Use n(n-1)/2 to count all unique handshakes",
+        inputType: "number"
+    };
+};
+
 // Export all generators for this category
 const wordProblemsGenerators = {
     simpleAdditionStory,
     subtractionStory,
-    comparisonProblem
+    comparisonProblem,
+    handshakeProblem
 };
 
 export default wordProblemsGenerators;
