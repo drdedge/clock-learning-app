@@ -350,7 +350,7 @@ const SevenPlusQuizApp = () => {
                         <select
                             value={focusMode}
                             onChange={(e) => setFocusMode(e.target.value)}
-                            className="w-full p-3 border-3 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none bg-pink-50 font-medium"
+                            className="w-full p-3 border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none bg-pink-50 font-medium"
                         >
                             <option value="all">All Question Types</option>
                             <option value="wordProblems">Word Problems (Reading & Math)</option>
@@ -379,7 +379,7 @@ const SevenPlusQuizApp = () => {
                     </div>
 
                     {/* Question Display with decorative border */}
-                    <div className="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-6 mb-6 border-3 border-purple-200 shadow-lg relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-6 mb-6 border-2 border-purple-200 shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 text-pink-200 opacity-30">
                             <Star className="w-24 h-24" />
                         </div>
@@ -415,7 +415,7 @@ const SevenPlusQuizApp = () => {
                                         <button
                                             key={index}
                                             onClick={() => handleAnswer(index)}
-                                            className={`p-4 text-lg border-3 rounded-xl font-bold transition-all transform hover:scale-105 ${userAnswers[currentQuestion] === index
+                                            className={`p-4 text-lg border-2 rounded-xl font-bold transition-all transform hover:scale-105 ${userAnswers[currentQuestion] === index
                                                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-purple-500 shadow-lg'
                                                     : 'bg-white text-gray-700 border-pink-300 hover:border-purple-400 hover:bg-pink-50'
                                                 }`}
@@ -432,7 +432,7 @@ const SevenPlusQuizApp = () => {
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => handleAnswer(e.target.value)}
-                                    className="w-full p-4 text-2xl border-3 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none text-center font-bold bg-pink-50 shadow-inner"
+                                    className="w-full p-4 text-2xl border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none text-center font-bold bg-pink-50 shadow-inner"
                                     placeholder="Type your answer"
                                 />
                             </>
