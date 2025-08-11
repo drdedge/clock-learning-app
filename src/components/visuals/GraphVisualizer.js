@@ -117,7 +117,7 @@ const GraphVisualizer = ({ graphData, graphType }) => {
   };
 
   const renderLineGraph = () => {
-    const { points, title, unit = '', xLabel, yLabel } = graphData;
+    const { points, title, unit = '', xLabel } = graphData;
     const maxY = Math.max(...points.map(p => p.y));
     const minY = Math.min(...points.map(p => p.y));
     const chartWidth = 400;

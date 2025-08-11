@@ -4,9 +4,7 @@ const generateReadingClock = () => {
   const hour = hours[Math.floor(Math.random() * hours.length)];
   const minute = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
   
-  const timeString = minute === 0 ? `${hour}:00` : 
-                     minute === 15 ? `${hour}:15` :
-                     minute === 30 ? `${hour}:30` : `${hour}:45`;
+  // timeString removed as it was revealing the answer in the question text
   
   const timeWords = minute === 0 ? `${hour} o'clock` :
                     minute === 15 ? `quarter past ${hour}` :

@@ -63,7 +63,18 @@ const SevenPlusQuizApp = () => {
                 setTimeRemaining(prev => {
                     if (prev <= 1) {
                         // Time's up - mark as timed out and auto-advance
-                        handleTimeOut();
+                        setTimedOutQuestions(prevTimeout => ({
+                            ...prevTimeout,
+                            [currentQuestion]: true
+                        }));
+                        
+                        // Auto-advance to next question or show results
+                        if (currentQuestion < questions.length - 1) {
+                            setCurrentQuestion(currentQuestion + 1);
+                            setInputValue('');
+                        } else {
+                            setShowResults(true);
+                        }
                         return 60;
                     }
                     return prev - 1;
@@ -82,26 +93,13 @@ const SevenPlusQuizApp = () => {
                 timerIntervalRef.current = null;
             }
         };
-    }, [timerMode, isPaused, showResults, timeRemaining, currentQuestion]);
+    }, [timerMode, isPaused, showResults, timeRemaining, currentQuestion, questions.length]);
 
     // Save timer mode preference to localStorage
     useEffect(() => {
         localStorage.setItem('sevenPlusTimerMode', timerMode.toString());
     }, [timerMode]);
 
-    const handleTimeOut = () => {
-        setTimedOutQuestions(prev => ({
-            ...prev,
-            [currentQuestion]: true
-        }));
-        
-        // Auto-advance to next question or show results
-        if (currentQuestion < questions.length - 1) {
-            nextQuestion();
-        } else {
-            setShowResults(true);
-        }
-    };
 
     const toggleTimerMode = () => {
         setTimerMode(prev => !prev);
