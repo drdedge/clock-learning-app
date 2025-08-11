@@ -8,35 +8,33 @@ import measurement from './measurement';
 import numberBonds from './numberBonds';
 import mentalMath from './mentalMath';
 import fractions from './fractions';
+import clockTime from './clockTime';
+import shapes2D3D from './shapes2D3D';
+import symbolAlgebra from './symbolAlgebra';
+import graphs from './graphs';
+import unitConversions from './unitConversions';
+import everydayComparisons from './everydayComparisons';
 
 // Combine all generators into a single object
 export const questionGenerators = {
-    // Word Problems
+    // Original categories
     ...wordProblems,
-    
-    // Money Problems
     ...moneyProblems,
-    
-    // Number Patterns
     ...numberPatterns,
-    
-    // Place Value
     ...placeValue,
-    
-    // Shapes
     ...shapes,
-    
-    // Measurement
     ...measurement,
-    
-    // Number Bonds
     ...numberBonds,
-
-    // Mental Math
     ...mentalMath,
-
-    // Fractions
-    ...fractions
+    ...fractions,
+    
+    // New 7+ categories
+    ...clockTime,
+    ...shapes2D3D,
+    ...symbolAlgebra,
+    ...graphs,
+    ...unitConversions,
+    ...everydayComparisons
 };
 
 // Category mappings for focus modes
@@ -45,16 +43,104 @@ export const categoryGenerators = {
     moneyProblems: Object.keys(moneyProblems),
     patterns: Object.keys(numberPatterns),
     placeValue: Object.keys(placeValue),
-    shapes: Object.keys(shapes),
-    measurement: Object.keys(measurement),
+    shapes: [...Object.keys(shapes), ...Object.keys(shapes2D3D)],
+    measurement: [...Object.keys(measurement), ...Object.keys(unitConversions)],
     numberBonds: Object.keys(numberBonds),
     mentalMath: Object.keys(mentalMath),
-    fractions: Object.keys(fractions)
+    fractions: Object.keys(fractions),
+    time: Object.keys(clockTime),
+    algebra: Object.keys(symbolAlgebra),
+    graphs: Object.keys(graphs),
+    realWorld: Object.keys(everydayComparisons)
 };
+
+// Dynamic Question Bank System
+class DynamicQuestionBank {
+    constructor() {
+        this.usedQuestions = new Set();
+        this.questionHistory = [];
+        this.maxHistorySize = 50;
+    }
+    
+    reset() {
+        this.usedQuestions.clear();
+        this.questionHistory = [];
+    }
+    
+    generateUniqueQuestion(generatorNames, maxAttempts = 10) {
+        // Filter out any generators that have been exhausted
+        const availableGenerators = generatorNames.filter(name => 
+            questionGenerators[name] && typeof questionGenerators[name] === 'function'
+        );
+        
+        if (availableGenerators.length === 0) {
+            console.error('No valid generators available');
+            return null;
+        }
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            // Randomly select a generator
+            const generatorName = availableGenerators[Math.floor(Math.random() * availableGenerators.length)];
+            const generator = questionGenerators[generatorName];
+            
+            try {
+                const question = generator();
+                
+                // Create a unique key for the question
+                const questionKey = JSON.stringify({
+                    q: question.question,
+                    a: question.answer
+                });
+                
+                // Check if we've used this exact question before
+                if (!this.usedQuestions.has(questionKey)) {
+                    this.usedQuestions.add(questionKey);
+                    this.questionHistory.push(questionKey);
+                    
+                    // Maintain history size limit
+                    if (this.questionHistory.length > this.maxHistorySize) {
+                        const oldKey = this.questionHistory.shift();
+                        this.usedQuestions.delete(oldKey);
+                    }
+                    
+                    return question;
+                }
+            } catch (error) {
+                console.error(`Error generating question with ${generatorName}:`, error);
+            }
+        }
+        
+        // If we couldn't find a unique question, reset and try again
+        if (this.questionHistory.length > 20) {
+            this.reset();
+            return this.generateUniqueQuestion(generatorNames, 1);
+        }
+        
+        return null;
+    }
+    
+    generateQuestionSet(generatorNames, count = 20) {
+        const questions = [];
+        const bank = new DynamicQuestionBank();
+        
+        for (let i = 0; i < count; i++) {
+            const question = bank.generateUniqueQuestion(generatorNames);
+            if (question) {
+                questions.push(question);
+            }
+        }
+        
+        return questions;
+    }
+}
+
+// Export a singleton instance
+export const questionBank = new DynamicQuestionBank();
 
 // Get generators for a specific focus mode
 export const getGeneratorsForFocusMode = (focusMode) => {
     switch (focusMode) {
+        // Original focus modes
         case 'wordProblems':
             return [...categoryGenerators.wordProblems, ...categoryGenerators.moneyProblems];
         case 'numberBonds':
@@ -73,10 +159,45 @@ export const getGeneratorsForFocusMode = (focusMode) => {
             return categoryGenerators.mentalMath;
         case 'fractions':
             return categoryGenerators.fractions;
+            
+        // New 7+ focus modes
+        case 'time':
+            return categoryGenerators.time;
+        case 'algebra':
+            return categoryGenerators.algebra;
+        case 'graphs':
+            return categoryGenerators.graphs;
+        case 'realWorld':
+            return categoryGenerators.realWorld;
+        case 'advanced':
+            // Advanced mode combines algebra, complex word problems, and graphs
+            return [
+                ...categoryGenerators.algebra,
+                ...categoryGenerators.graphs,
+                'generateComplexWordProblems',
+                'generateTimeWordProblem',
+                'generateScheduleProblem'
+            ];
+        case '7plus':
+            // Special 7+ mode with all advanced topics
+            return [
+                ...categoryGenerators.time,
+                ...categoryGenerators.algebra,
+                ...categoryGenerators.graphs,
+                ...categoryGenerators.shapes,
+                ...categoryGenerators.measurement,
+                ...categoryGenerators.realWorld
+            ];
         default:
             // Return all generators for 'all' mode
             return Object.keys(questionGenerators);
     }
+};
+
+// Helper function to generate a quiz with no repetition
+export const generateDynamicQuiz = (focusMode = 'all', questionCount = 20) => {
+    const generators = getGeneratorsForFocusMode(focusMode);
+    return questionBank.generateQuestionSet(generators, questionCount);
 };
 
 // Export individual category modules for direct access if needed
@@ -89,5 +210,11 @@ export {
     measurement,
     numberBonds,
     mentalMath,
-    fractions
+    fractions,
+    clockTime,
+    shapes2D3D,
+    symbolAlgebra,
+    graphs,
+    unitConversions,
+    everydayComparisons
 };

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import PageWrapper from '../shared/PageWrapper';
-import { questionGenerators, getGeneratorsForFocusMode } from '../../utils/questions';
+import { generateDynamicQuiz, questionBank } from '../../utils/questions';
 
 const SevenPlusQuizApp = () => {
     const [questions, setQuestions] = useState([]);
@@ -16,28 +16,15 @@ const SevenPlusQuizApp = () => {
 
     // Generate questions based on focus mode
     const generateQuestions = useCallback(() => {
-        const questionCount = 20;
-        const generatedQuestions = [];
-
-        // Get active generators based on focus mode
-        const activeGenerators = getGeneratorsForFocusMode(focusMode);
-
-        for (let i = 0; i < questionCount; i++) {
-            const generatorName = activeGenerators[Math.floor(Math.random() * activeGenerators.length)];
-            const question = questionGenerators[generatorName]();
-            generatedQuestions.push({
-                id: i,
-                type: generatorName,
-                ...question
-            });
-        }
-
-        return generatedQuestions;
+        // Reset the question bank for a new quiz
+        questionBank.reset();
+        return generateDynamicQuiz(focusMode, 20);
     }, [focusMode]);
 
     // Initialize questions on mount and when focus mode changes
     useEffect(() => {
-        setQuestions(generateQuestions());
+        const newQuestions = generateQuestions();
+        setQuestions(newQuestions);
         setCurrentQuestion(0);
         setUserAnswers({});
         setShowResults(false);
@@ -53,8 +40,11 @@ const SevenPlusQuizApp = () => {
 
     const handleAnswer = (value) => {
         const timeSpent = (Date.now() - questionStartTime) / 1000; // Convert to seconds
+        const current = questions[currentQuestion];
+        
+        if (!current) return;
 
-        if (questions[currentQuestion].inputType === 'multiple-choice') {
+        if (current.inputType === 'multiple-choice') {
             setUserAnswers({
                 ...userAnswers,
                 [currentQuestion]: parseInt(value)
@@ -63,7 +53,19 @@ const SevenPlusQuizApp = () => {
                 ...answerTimes,
                 [currentQuestion]: timeSpent
             });
+        } else if (current.inputType === 'text') {
+            // For text answers (like time format, shape names)
+            setInputValue(value);
+            setUserAnswers({
+                ...userAnswers,
+                [currentQuestion]: value
+            });
+            setAnswerTimes({
+                ...answerTimes,
+                [currentQuestion]: timeSpent
+            });
         } else {
+            // For number answers
             if (value === '' || (!isNaN(value) && parseInt(value) >= 0)) {
                 setInputValue(value);
                 if (value !== '') {
@@ -84,7 +86,7 @@ const SevenPlusQuizApp = () => {
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
             const nextQ = questions[currentQuestion + 1];
-            if (nextQ.inputType === 'number') {
+            if (nextQ && (nextQ.inputType === 'number' || nextQ.inputType === 'text')) {
                 setInputValue(userAnswers[currentQuestion + 1]?.toString() || '');
             }
         }
@@ -94,7 +96,7 @@ const SevenPlusQuizApp = () => {
         if (currentQuestion > 0) {
             setCurrentQuestion(currentQuestion - 1);
             const prevQ = questions[currentQuestion - 1];
-            if (prevQ.inputType === 'number') {
+            if (prevQ && (prevQ.inputType === 'number' || prevQ.inputType === 'text')) {
                 setInputValue(userAnswers[currentQuestion - 1]?.toString() || '');
             }
         }
@@ -106,7 +108,15 @@ const SevenPlusQuizApp = () => {
 
         questions.forEach((q, index) => {
             const userAnswer = userAnswers[index];
-            const correct = userAnswer === q.answer;
+            let correct = false;
+            
+            if (q.inputType === 'text') {
+                // For text answers, compare case-insensitively
+                correct = userAnswer?.toString().toLowerCase() === q.answer?.toString().toLowerCase();
+            } else {
+                correct = userAnswer === q.answer;
+            }
+            
             if (correct) totalCorrect++;
 
             if (!results[q.category]) {
@@ -120,13 +130,40 @@ const SevenPlusQuizApp = () => {
     };
 
     const resetQuiz = () => {
-        setQuestions(generateQuestions());
+        const newQuestions = generateQuestions();
+        setQuestions(newQuestions);
         setCurrentQuestion(0);
         setUserAnswers({});
         setShowResults(false);
         setInputValue('');
         setAnswerTimes({});
         setQuestionStartTime(Date.now());
+    };
+
+    // Clock display component for clock questions
+    const ClockDisplay = ({ hour, minute }) => {
+        const hourAngle = (hour % 12) * 30 + (minute / 60) * 30;
+        const minuteAngle = minute * 6;
+        
+        return (
+            <svg width="120" height="120" viewBox="0 0 120 120" className="mx-auto my-4">
+                <circle cx="60" cy="60" r="58" fill="white" stroke="#ec4899" strokeWidth="4"/>
+                {[12, 3, 6, 9].map((num, i) => (
+                    <text key={num} x={60 + (i % 2 === 1 ? (i === 1 ? 40 : -40) : 0)} 
+                          y={60 + (i < 2 ? -40 : 40) + 6} 
+                          textAnchor="middle" fontSize="14" fontWeight="bold" fill="#be185d">
+                        {num}
+                    </text>
+                ))}
+                <line x1="60" y1="60" x2="60" y2="25" 
+                      stroke="#be185d" strokeWidth="4" strokeLinecap="round"
+                      transform={`rotate(${hourAngle} 60 60)`}/>
+                <line x1="60" y1="60" x2="60" y2="15" 
+                      stroke="#a855f7" strokeWidth="3" strokeLinecap="round"
+                      transform={`rotate(${minuteAngle} 60 60)`}/>
+                <circle cx="60" cy="60" r="4" fill="#ec4899"/>
+            </svg>
+        );
     };
 
     if (showResults) {
@@ -144,7 +181,8 @@ const SevenPlusQuizApp = () => {
         const speedData = questions.map((q, index) => ({
             question: `Q${index + 1}`,
             time: answerTimes[index] || 0,
-            correct: userAnswers[index] === q.answer
+            correct: userAnswers[index] === q.answer || 
+                     (q.inputType === 'text' && userAnswers[index]?.toString().toLowerCase() === q.answer?.toString().toLowerCase())
         }));
 
         const averageTime = Object.values(answerTimes).length > 0
@@ -256,11 +294,13 @@ const SevenPlusQuizApp = () => {
                             <div className="space-y-4 max-h-96 overflow-y-auto">
                                 {questions.map((q, index) => {
                                     const userAnswer = userAnswers[index];
-                                    const correct = userAnswer === q.answer;
+                                    const correct = q.inputType === 'text' 
+                                        ? userAnswer?.toString().toLowerCase() === q.answer?.toString().toLowerCase()
+                                        : userAnswer === q.answer;
                                     const timeSpent = answerTimes[index];
 
                                     return (
-                                        <div key={q.id} className={`p-4 rounded-lg border-2 ${correct ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                                        <div key={index} className={`p-4 rounded-lg border-2 ${correct ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
                                             <div className="flex items-start gap-3">
                                                 {correct ? (
                                                     <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
@@ -268,7 +308,7 @@ const SevenPlusQuizApp = () => {
                                                     <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
                                                 )}
                                                 <div className="flex-1">
-                                                    <p className="font-medium text-gray-800 mb-2">Q{index + 1}: {q.question}</p>
+                                                    <p className="font-medium text-gray-800 mb-2 whitespace-pre-line">Q{index + 1}: {q.question}</p>
                                                     <div className="flex gap-4 text-sm">
                                                         {q.inputType === 'multiple-choice' ? (
                                                             <>
@@ -278,7 +318,7 @@ const SevenPlusQuizApp = () => {
                                                         ) : (
                                                             <>
                                                                 <span>Your answer: <strong>{userAnswer !== undefined ? userAnswer : 'No answer'}</strong></span>
-                                                                {!correct && <span>Correct answer: <strong>{q.answer}</strong></span>}
+                                                                {!correct && <span>Correct answer: <strong>{q.answer}</strong> {q.unit ? q.unit : ''}</span>}
                                                             </>
                                                         )}
                                                         {timeSpent && <span className="text-gray-500">Time: {timeSpent.toFixed(1)}s</span>}
@@ -297,7 +337,7 @@ const SevenPlusQuizApp = () => {
                         {percentage < 70 && (
                             <div className="bg-blue-50 rounded-lg p-4 mb-6">
                                 <h3 className="font-bold text-blue-900 mb-2">Keep Practicing!</h3>
-                                <p className="text-blue-800">Focus on word problems - they help you understand when to use different math skills in real life!</p>
+                                <p className="text-blue-800">Try focusing on specific topics using the practice mode selector. Each question type builds important math skills!</p>
                             </div>
                         )}
 
@@ -316,6 +356,21 @@ const SevenPlusQuizApp = () => {
 
     const current = questions[currentQuestion];
     if (!current) return null;
+
+    // Get icon for category
+    const getCategoryIcon = (category) => {
+        switch(category) {
+            case "Shapes": return <Shapes className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Money": 
+            case "Money Problems": return <Coins className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Measurement": return <Ruler className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Time": return <Clock className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Algebra": return <Calculator className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Graphs": return <BarChart3 className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            case "Real World": return <Globe className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+            default: return <BookOpen className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />;
+        }
+    };
 
     return (
         <PageWrapper>
@@ -352,16 +407,22 @@ const SevenPlusQuizApp = () => {
                             onChange={(e) => setFocusMode(e.target.value)}
                             className="w-full p-3 border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none bg-pink-50 font-medium"
                         >
-                            <option value="all">All Question Types</option>
-                            <option value="wordProblems">Word Problems (Reading & Math)</option>
-                            <option value="numberBonds">Number Bonds (to 10, 20, 50, 100)</option>
-                            <option value="placeValue">Place Value</option>
-                            <option value="patterns">Number Patterns & Sequences</option>
-                            <option value="shapes">Shapes (Properties & Identification)</option>
-                            <option value="measurement">Measurement & Units</option>
-                            <option value="money">Money & Change</option>
-                            <option value="mentalMath">Mental Math Strategies</option>
-                            <option value="fractions">Fractions</option>
+                            <option value="all">🌟 All Question Types</option>
+                            <option value="7plus">🎯 7+ Challenge (Advanced Mix)</option>
+                            <option value="wordProblems">📖 Word Problems</option>
+                            <option value="time">🕐 Time & Clock Problems</option>
+                            <option value="algebra">🔢 Symbol Algebra & Patterns</option>
+                            <option value="shapes">🔷 2D & 3D Shapes</option>
+                            <option value="graphs">📊 Graph Reading</option>
+                            <option value="measurement">📏 Measurement & Conversions</option>
+                            <option value="realWorld">🌍 Real World Comparisons</option>
+                            <option value="money">💰 Money & Change</option>
+                            <option value="fractions">🍰 Fractions</option>
+                            <option value="numberBonds">🔗 Number Bonds</option>
+                            <option value="placeValue">🎲 Place Value</option>
+                            <option value="patterns">🔄 Number Patterns</option>
+                            <option value="mentalMath">🧮 Mental Math</option>
+                            <option value="advanced">🚀 Advanced Problems</option>
                         </select>
                     </div>
 
@@ -385,14 +446,15 @@ const SevenPlusQuizApp = () => {
                             <Star className="w-24 h-24" />
                         </div>
                         <div className="flex items-start gap-3 mb-4">
-                            {current.category === "Shapes" && <Shapes className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />}
-                            {current.category === "Money Problems" && <Coins className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />}
-                            {current.category === "Measurement" && <Ruler className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />}
-                            {!["Shapes", "Money Problems", "Measurement"].includes(current.category) && <BookOpen className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />}
+                            {getCategoryIcon(current.category)}
                             <div className="flex-1">
-                                <p className="text-2xl font-bold text-gray-800 leading-relaxed relative z-10">
+                                <p className="text-2xl font-bold text-gray-800 leading-relaxed relative z-10 whitespace-pre-line">
                                     {current.question}
                                 </p>
+                                {/* Display clock if it's a clock question */}
+                                {current.clockTime && (
+                                    <ClockDisplay hour={current.clockTime.hour} minute={current.clockTime.minute} />
+                                )}
                             </div>
                         </div>
 
@@ -416,10 +478,11 @@ const SevenPlusQuizApp = () => {
                                         <button
                                             key={index}
                                             onClick={() => handleAnswer(index)}
-                                            className={`p-4 text-lg border-2 rounded-xl font-bold transition-all transform hover:scale-105 ${userAnswers[currentQuestion] === index
+                                            className={`p-4 text-lg border-2 rounded-xl font-bold transition-all transform hover:scale-105 ${
+                                                userAnswers[currentQuestion] === index
                                                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-purple-500 shadow-lg'
                                                     : 'bg-white text-gray-700 border-pink-300 hover:border-purple-400 hover:bg-pink-50'
-                                                }`}
+                                            }`}
                                         >
                                             {option}
                                         </button>
@@ -428,13 +491,15 @@ const SevenPlusQuizApp = () => {
                             </>
                         ) : (
                             <>
-                                <label className="block text-lg font-bold text-purple-700 mb-2">💖 Your Answer:</label>
+                                <label className="block text-lg font-bold text-purple-700 mb-2">
+                                    💖 Your Answer {current.unit ? `(in ${current.unit})` : ''}:
+                                </label>
                                 <input
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => handleAnswer(e.target.value)}
                                     className="w-full p-4 text-2xl border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none text-center font-bold bg-pink-50 shadow-inner"
-                                    placeholder="Type your answer"
+                                    placeholder={current.inputType === 'text' ? "Type your answer" : "Enter a number"}
                                 />
                             </>
                         )}
@@ -445,10 +510,11 @@ const SevenPlusQuizApp = () => {
                         <button
                             onClick={previousQuestion}
                             disabled={currentQuestion === 0}
-                            className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all transform ${currentQuestion === 0
+                            className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all transform ${
+                                currentQuestion === 0
                                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                     : 'bg-pink-200 text-pink-700 hover:bg-pink-300 hover:scale-105 shadow-md'
-                                }`}
+                            }`}
                         >
                             <ChevronLeft className="w-5 h-5" />
                             Previous

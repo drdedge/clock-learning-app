@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://drdedge.github.io/clock-learning-app",
   "dependencies": {
+    "@supabase/supabase-js": "^2.54.0",
     "cra-template-tailwindcss": "4.0.1",
     "lucide-react": "^0.460.0",
     "react": "^19.0.0",
