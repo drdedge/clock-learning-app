@@ -56,7 +56,20 @@ const generateBarChartReading = () => {
     category: "Graphs",
     skill: "Bar Chart Reading",
     tip: problem.tip,
-    inputType: typeof problem.answer === "string" ? "text" : "number"
+    inputType: typeof problem.answer === "string" ? "text" : "number",
+    visual: {
+      graphType: "bar",
+      graphData: {
+        title: "Favorite Subjects in Class",
+        items: Object.entries(data).map(([subject, value]) => ({
+          label: subject,
+          value: value
+        })),
+        unit: "students",
+        yAxisLabel: "Number of Students",
+        xAxisLabel: "Subjects"
+      }
+    }
   };
 };
 
@@ -118,7 +131,21 @@ const generatePictogram = () => {
     category: "Graphs",
     skill: "Pictograms",
     tip: problem.tip,
-    inputType: typeof problem.answer === "string" ? "text" : "number"
+    inputType: typeof problem.answer === "string" ? "text" : "number",
+    visual: {
+      graphType: "pictogram",
+      graphData: {
+        title: `${item.charAt(0).toUpperCase() + item.slice(1)} Count`,
+        items: Object.entries(data).map(([day, symbols]) => ({
+          label: day,
+          symbols: symbols,
+          value: symbols * symbolValue
+        })),
+        symbolValue: symbolValue,
+        symbolIcon: "⭐",
+        unit: item
+      }
+    }
   };
 };
 
@@ -196,7 +223,20 @@ const generateLineGraph = () => {
     skill: "Line Graphs",
     tip: problem.tip,
     inputType: typeof problem.answer === "string" ? "text" : "number",
-    unit: typeof problem.answer === "number" ? context.unit : undefined
+    unit: typeof problem.answer === "number" ? context.unit : undefined,
+    visual: {
+      graphType: "line",
+      graphData: {
+        title: context.title,
+        items: context.times.map((time, index) => ({
+          label: time,
+          value: data[index]
+        })),
+        unit: context.unit,
+        yAxisLabel: `Value (${context.unit})`,
+        xAxisLabel: "Time"
+      }
+    }
   };
 };
 
@@ -278,7 +318,20 @@ const generatePieChart = () => {
     skill: "Pie Charts",
     tip: problem.tip,
     inputType: typeof problem.answer === "string" ? "text" : "number",
-    unit: problem.answer.toString().includes("%") ? "%" : undefined
+    unit: problem.answer.toString().includes("%") ? "%" : undefined,
+    visual: {
+      graphType: "pie",
+      graphData: {
+        title: context.title,
+        items: context.items.map((item, index) => ({
+          label: item,
+          value: data[index],
+          percentage: Math.round((data[index] / context.total) * 100)
+        })),
+        total: context.total,
+        unit: "units"
+      }
+    }
   };
 };
 
@@ -299,7 +352,30 @@ const generateTallyChart = () => {
   const tallyToMarks = (n) => {
     const fives = Math.floor(n / 5);
     const remainder = n % 5;
-    return "||||/ ".repeat(fives) + "|".repeat(remainder);
+    // Use proper Unicode characters for clear, non-overlapping tally marks
+    const verticalBar = "│";  // Unicode box drawing vertical line
+    const diagonalCross = "╱"; // Unicode diagonal line
+    let result = "";
+    
+    // Build groups of 5 with clear spacing
+    for (let i = 0; i < fives; i++) {
+      // Create a group of 5: four vertical bars crossed by a diagonal
+      result += verticalBar + verticalBar + verticalBar + verticalBar + diagonalCross;
+      // Add spacing between groups
+      if (i < fives - 1 || remainder > 0) {
+        result += "  ";  // Double space between groups
+      }
+    }
+    
+    // Add remaining single marks with spacing
+    for (let i = 0; i < remainder; i++) {
+      result += verticalBar;
+      if (i < remainder - 1) {
+        result += " ";  // Single space between individual marks
+      }
+    }
+    
+    return result;
   };
   
   const questionTypes = [
@@ -348,7 +424,19 @@ const generateTallyChart = () => {
     category: "Graphs",
     skill: "Tally Charts",
     tip: problem.tip,
-    inputType: typeof problem.answer === "string" ? "text" : "number"
+    inputType: typeof problem.answer === "string" ? "text" : "number",
+    visual: {
+      graphType: "tally",
+      graphData: {
+        title: context.title,
+        items: Object.entries(data).map(([item, count]) => ({
+          label: item,
+          value: count,
+          tallyMarks: tallyToMarks(count)
+        })),
+        unit: "count"
+      }
+    }
   };
 };
 
@@ -418,7 +506,21 @@ const generateCarrollDiagram = () => {
     category: "Graphs",
     skill: "Carroll Diagrams",
     tip: problem.tip,
-    inputType: "number"
+    inputType: "number",
+    visual: {
+      graphType: "carroll",
+      graphData: {
+        title: context.title,
+        property1: context.property1,
+        property2: context.property2,
+        quadrants: [
+          { label: "Yes/Yes", items: context.items["Yes/Yes"], count: context.items["Yes/Yes"].length },
+          { label: "Yes/No", items: context.items["Yes/No"], count: context.items["Yes/No"].length },
+          { label: "No/Yes", items: context.items["No/Yes"], count: context.items["No/Yes"].length },
+          { label: "No/No", items: context.items["No/No"], count: context.items["No/No"].length }
+        ]
+      }
+    }
   };
 };
 

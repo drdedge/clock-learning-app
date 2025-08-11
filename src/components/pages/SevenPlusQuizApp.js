@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe, Pause, Play, AlarmClock } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import PageWrapper from '../shared/PageWrapper';
 import { generateDynamicQuiz, questionBank } from '../../utils/questions';
+import GraphVisualizer from '../visuals/GraphVisualizer';
 
 const SevenPlusQuizApp = () => {
     const [questions, setQuestions] = useState([]);
@@ -13,6 +14,16 @@ const SevenPlusQuizApp = () => {
     const [inputValue, setInputValue] = useState('');
     const [questionStartTime, setQuestionStartTime] = useState(Date.now());
     const [answerTimes, setAnswerTimes] = useState({});
+    
+    // Timer mode states
+    const [timerMode, setTimerMode] = useState(() => {
+        const saved = localStorage.getItem('sevenPlusTimerMode');
+        return saved === 'true';
+    });
+    const [timeRemaining, setTimeRemaining] = useState(60);
+    const [isPaused, setIsPaused] = useState(false);
+    const [timedOutQuestions, setTimedOutQuestions] = useState({});
+    const timerIntervalRef = useRef(null);
 
     // Generate questions based on focus mode
     const generateQuestions = useCallback(() => {
@@ -30,13 +41,77 @@ const SevenPlusQuizApp = () => {
         setShowResults(false);
         setInputValue('');
         setAnswerTimes({});
+        setTimedOutQuestions({});
         setQuestionStartTime(Date.now());
+        setTimeRemaining(60);
+        setIsPaused(false);
     }, [focusMode, generateQuestions]);
 
     // Update question start time when navigating
     useEffect(() => {
         setQuestionStartTime(Date.now());
-    }, [currentQuestion]);
+        if (timerMode && !showResults) {
+            setTimeRemaining(60);
+            setIsPaused(false);
+        }
+    }, [currentQuestion, timerMode, showResults]);
+
+    // Timer countdown effect
+    useEffect(() => {
+        if (timerMode && !isPaused && !showResults && timeRemaining > 0) {
+            timerIntervalRef.current = setInterval(() => {
+                setTimeRemaining(prev => {
+                    if (prev <= 1) {
+                        // Time's up - mark as timed out and auto-advance
+                        handleTimeOut();
+                        return 60;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+                timerIntervalRef.current = null;
+            }
+        }
+
+        return () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+                timerIntervalRef.current = null;
+            }
+        };
+    }, [timerMode, isPaused, showResults, timeRemaining, currentQuestion]);
+
+    // Save timer mode preference to localStorage
+    useEffect(() => {
+        localStorage.setItem('sevenPlusTimerMode', timerMode.toString());
+    }, [timerMode]);
+
+    const handleTimeOut = () => {
+        setTimedOutQuestions(prev => ({
+            ...prev,
+            [currentQuestion]: true
+        }));
+        
+        // Auto-advance to next question or show results
+        if (currentQuestion < questions.length - 1) {
+            nextQuestion();
+        } else {
+            setShowResults(true);
+        }
+    };
+
+    const toggleTimerMode = () => {
+        setTimerMode(prev => !prev);
+        setTimeRemaining(60);
+        setIsPaused(false);
+    };
+
+    const togglePause = () => {
+        setIsPaused(prev => !prev);
+    };
 
     const handleAnswer = (value) => {
         const timeSpent = (Date.now() - questionStartTime) / 1000; // Convert to seconds
@@ -137,7 +212,10 @@ const SevenPlusQuizApp = () => {
         setShowResults(false);
         setInputValue('');
         setAnswerTimes({});
+        setTimedOutQuestions({});
         setQuestionStartTime(Date.now());
+        setTimeRemaining(60);
+        setIsPaused(false);
     };
 
     // Clock display component for clock questions
@@ -298,11 +376,14 @@ const SevenPlusQuizApp = () => {
                                         ? userAnswer?.toString().toLowerCase() === q.answer?.toString().toLowerCase()
                                         : userAnswer === q.answer;
                                     const timeSpent = answerTimes[index];
+                                    const wasTimedOut = timedOutQuestions[index];
 
                                     return (
-                                        <div key={index} className={`p-4 rounded-lg border-2 ${correct ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                                        <div key={index} className={`p-4 rounded-lg border-2 ${wasTimedOut ? 'bg-orange-50 border-orange-300' : correct ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
                                             <div className="flex items-start gap-3">
-                                                {correct ? (
+                                                {wasTimedOut ? (
+                                                    <AlarmClock className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                                                ) : correct ? (
                                                     <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                                                 ) : (
                                                     <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
@@ -322,6 +403,7 @@ const SevenPlusQuizApp = () => {
                                                             </>
                                                         )}
                                                         {timeSpent && <span className="text-gray-500">Time: {timeSpent.toFixed(1)}s</span>}
+                                                        {wasTimedOut && <span className="text-orange-600 font-bold">Timed Out</span>}
                                                     </div>
                                                     {!correct && q.tip && (
                                                         <p className="text-sm text-gray-600 mt-2 italic">💡 Tip: {q.tip}</p>
@@ -399,9 +481,10 @@ const SevenPlusQuizApp = () => {
                         </div>
                     </div>
 
-                    {/* Focus Mode Selector */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Practice Mode:</label>
+                    {/* Focus Mode Selector and Timer Toggle */}
+                    <div className="mb-6 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Practice Mode:</label>
                         <select
                             value={focusMode}
                             onChange={(e) => setFocusMode(e.target.value)}
@@ -424,7 +507,72 @@ const SevenPlusQuizApp = () => {
                             <option value="mentalMath">🧮 Mental Math</option>
                             <option value="advanced">🚀 Advanced Problems</option>
                         </select>
+                        </div>
+                        
+                        {/* Timer Mode Toggle */}
+                        <div className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-purple-200">
+                            <div className="flex items-center gap-3">
+                                <Timer className="w-6 h-6 text-purple-600" />
+                                <div>
+                                    <span className="font-bold text-purple-800">Timer Mode</span>
+                                    <p className="text-sm text-gray-600">60 seconds per question</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={toggleTimerMode}
+                                className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                                    timerMode ? 'bg-purple-600' : 'bg-gray-300'
+                                }`}
+                            >
+                                <span
+                                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                                        timerMode ? 'translate-x-9' : 'translate-x-1'
+                                    }`}
+                                />
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Timer Display (when timer mode is active) */}
+                    {timerMode && (
+                        <div className="mb-4">
+                            <div className={`relative overflow-hidden rounded-xl border-2 ${
+                                timeRemaining <= 10 ? 'border-red-400 animate-pulse' : 'border-purple-300'
+                            }`}>
+                                <div className="flex items-center justify-between p-3 bg-white relative z-10">
+                                    <div className="flex items-center gap-2">
+                                        <AlarmClock className={`w-5 h-5 ${
+                                            timeRemaining <= 10 ? 'text-red-600 animate-bounce' : 'text-purple-600'
+                                        }`} />
+                                        <span className={`font-bold text-lg ${
+                                            timeRemaining <= 10 ? 'text-red-600' : 'text-purple-700'
+                                        }`}>
+                                            {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={togglePause}
+                                        className="p-2 rounded-lg bg-purple-100 hover:bg-purple-200 transition-colors"
+                                        title={isPaused ? "Resume timer" : "Pause timer"}
+                                    >
+                                        {isPaused ? (
+                                            <Play className="w-4 h-4 text-purple-600" />
+                                        ) : (
+                                            <Pause className="w-4 h-4 text-purple-600" />
+                                        )}
+                                    </button>
+                                </div>
+                                <div className="absolute bottom-0 left-0 h-full bg-gradient-to-r from-purple-200 to-pink-200 transition-all duration-1000 ease-linear"
+                                     style={{ width: `${(timeRemaining / 60) * 100}%` }}
+                                />
+                            </div>
+                            {timeRemaining <= 10 && (
+                                <p className="text-center text-red-600 font-bold mt-2 animate-pulse">
+                                    ⚠️ Hurry! Time is running out!
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     {/* Progress Bar with stars */}
                     <div className="mb-6 p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl">
@@ -454,6 +602,15 @@ const SevenPlusQuizApp = () => {
                                 {/* Display clock if it's a clock question */}
                                 {current.clockTime && (
                                     <ClockDisplay hour={current.clockTime.hour} minute={current.clockTime.minute} />
+                                )}
+                                {/* Display graph if it's a graph question */}
+                                {current.visual && (
+                                    <div className="mt-4">
+                                        <GraphVisualizer 
+                                            graphType={current.visual.graphType} 
+                                            graphData={current.visual.graphData} 
+                                        />
+                                    </div>
                                 )}
                             </div>
                         </div>

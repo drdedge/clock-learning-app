@@ -32,7 +32,7 @@ const generateReadingClock = () => {
   options.sort(() => Math.random() - 0.5);
   
   return {
-    question: `What time is shown on the clock? [Clock showing ${timeString}]`,
+    question: `What time is shown on the clock?`,
     answer: options.indexOf(correctOption),
     options: options,
     correctAnswer: correctOption,
@@ -182,6 +182,7 @@ const generateClockAngles = () => {
     { hour: 3, minute: 0, angle: 90, description: "right angle" },
     { hour: 6, minute: 0, angle: 180, description: "straight angle" },
     { hour: 9, minute: 0, angle: 90, description: "right angle" },
+    { hour: 12, minute: 0, angle: 0, description: "no angle" },
     { hour: 12, minute: 15, angle: 90, description: "right angle" },
     { hour: 12, minute: 30, angle: 180, description: "straight angle" }
   ];
