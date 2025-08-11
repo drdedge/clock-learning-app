@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe, Pause, Play, AlarmClock } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe, Pause, Play, AlarmClock, FileText } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import PageWrapper from '../shared/PageWrapper';
 import { generateDynamicQuiz, questionBank } from '../../utils/questions';
 import GraphVisualizer from '../visuals/GraphVisualizer';
+import ExamExportModal from '../modals/ExamExportModal';
 
 const SevenPlusQuizApp = () => {
     const [questions, setQuestions] = useState([]);
@@ -24,6 +25,9 @@ const SevenPlusQuizApp = () => {
     const [isPaused, setIsPaused] = useState(false);
     const [timedOutQuestions, setTimedOutQuestions] = useState({});
     const timerIntervalRef = useRef(null);
+    
+    // Export modal state
+    const [showExportModal, setShowExportModal] = useState(false);
 
     // Generate questions based on focus mode
     const generateQuestions = useCallback(() => {
@@ -469,13 +473,22 @@ const SevenPlusQuizApp = () => {
                                 <Brain className="w-10 h-10 text-purple-600" />
                                 7+ Math Practice ✨
                             </h1>
-                            <button
-                                onClick={resetQuiz}
-                                className="bg-pink-100 hover:bg-pink-200 text-pink-600 p-3 rounded-full transition-all hover:scale-110 shadow-lg"
-                                title="Start over"
-                            >
-                                <RotateCcw className="w-6 h-6" />
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setShowExportModal(true)}
+                                    className="bg-purple-100 hover:bg-purple-200 text-purple-600 p-3 rounded-full transition-all hover:scale-110 shadow-lg"
+                                    title="Export exam to PDF"
+                                >
+                                    <FileText className="w-6 h-6" />
+                                </button>
+                                <button
+                                    onClick={resetQuiz}
+                                    className="bg-pink-100 hover:bg-pink-200 text-pink-600 p-3 rounded-full transition-all hover:scale-110 shadow-lg"
+                                    title="Start over"
+                                >
+                                    <RotateCcw className="w-6 h-6" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -695,6 +708,12 @@ const SevenPlusQuizApp = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Export Modal */}
+            <ExamExportModal 
+                isOpen={showExportModal} 
+                onClose={() => setShowExportModal(false)} 
+            />
         </PageWrapper>
     );
 };

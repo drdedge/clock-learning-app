@@ -27,13 +27,13 @@ This is a React 19.0.0 educational app suite built with Create React App and Tai
 2. **Money Calculation**: Practice with coins and monetary values
 3. **Cake Fractions**: Visual fraction learning with cake slices
 4. **Number Line Fractions**: Understanding fractions on number lines
-5. **7+ Math Practice**: Advanced quiz system with 15+ categories including:
-   - Time & Clock Problems (15-minute increments)
-   - 2D/3D Shape Properties (vertices, edges, faces)
-   - Symbol Algebra & Equations
-   - Graph Reading (bar, pie, line, pictograms)
-   - Unit Conversions (length, mass, volume)
-   - Real-World Comparisons
+5. **7+ Math Practice**: Advanced quiz system with comprehensive features:
+   - **Timer Mode**: 60-second countdown per question with pause/resume
+   - **Visual Graphs**: Interactive bar charts, pie charts, line graphs, pictograms, tally charts
+   - **Clock Display**: Visual clock faces for time questions
+   - **15+ Categories**: Time problems, 2D/3D shapes, algebra, graphs, conversions, real-world math
+   - **Performance Analytics**: Category breakdown, speed tracking, detailed review
+   - **Adaptive Difficulty**: Questions adjust based on focus mode selection
 
 ### Project Structure
 
@@ -52,7 +52,8 @@ src/
 │   └── visuals/           # Interactive visual components
 │       ├── InteractiveClock.js    # Draggable clock with touch support
 │       ├── ShapeVisualizer.js     # 2D/3D shape rendering
-│       └── FractionVisualizer.js  # Multiple fraction representations
+│       ├── FractionVisualizer.js  # Multiple fraction representations
+│       └── GraphVisualizer.js     # Dynamic graph rendering (bar, pie, line, tally, etc.)
 ├── utils/
 │   ├── pageConfig.js       # Central page configuration
 │   ├── supabase.js        # Supabase client and helpers
@@ -93,6 +94,14 @@ src/
 - Arithmetic operations
 - Equivalent fractions display
 
+#### GraphVisualizer
+- **Bar Charts**: Animated bars with gradients and hover effects
+- **Pie Charts**: Interactive segments with percentages
+- **Line Graphs**: Time-series data with point markers
+- **Pictograms**: Symbol-based representations with configurable values
+- **Tally Charts**: Proper tally mark display with non-overlapping diagonals
+- **Carroll Diagrams**: 2x2 classification grids
+
 ### Math Practice Question System
 
 The 7+ Math Practice app uses an advanced modular question generation system:
@@ -103,10 +112,17 @@ The 7+ Math Practice app uses an advanced modular question generation system:
 
 #### Key Features
 - **Dynamic Question Bank**: No-repeat system tracks used questions
+- **Timer Mode**: 60-second countdown with pause/resume and visual warnings
 - **15 Focus Modes**: Including '7+ Challenge' and subject-specific practice
-- **Visual Integration**: Questions can display clocks, shapes, and fractions
+- **Visual Integration**: Interactive graphs, clocks, shapes, and fractions rendered inline
 - **Multiple Input Types**: Number, text, and multiple-choice
 - **Adaptive Tips**: Context-aware hints for wrong answers
+- **Performance Tracking**: Speed analytics, category breakdown, timed-out tracking
+- **Fixed Issues**:
+  - Clock questions no longer show answers in question text
+  - Tally charts render with proper non-overlapping diagonal marks
+  - Clock angles correctly identify 3:00 as right angle
+  - All graph questions now display interactive visual representations
 
 ### Supabase Integration
 
@@ -139,13 +155,15 @@ The app uses Supabase for cloud storage and real-time features:
 ### Styling Guidelines
 
 The app uses a pink/purple girly theme with:
-- Gradient backgrounds
-- Rounded corners (`rounded-lg`, `rounded-xl`)
-- Shadow effects for depth
-- Child-friendly decorative elements (flowers, hearts, stars)
-- Consistent use of pink-500, purple-500, and their variants
-- Custom CSS animations for celebrations and interactions
-- Responsive design for tablets and mobile
+- Gradient backgrounds (`from-pink-500 to-purple-500`)
+- Rounded corners (`rounded-lg`, `rounded-xl`, `rounded-2xl`)
+- Shadow effects for depth (`shadow-lg`, `shadow-2xl`)
+- Child-friendly decorative elements (flowers, hearts, stars, sparkles)
+- Consistent color scheme: pink-500, purple-500, and their variants
+- Custom animations: `animate-pulse`, `animate-bounce` for interactive elements
+- Timer warnings: Red color scheme and pulse animation at 10 seconds
+- Responsive design for tablets and mobile devices
+- Visual feedback: Hover effects with `hover:scale-105` transforms
 
 ### Dependencies
 
@@ -155,6 +173,20 @@ Key dependencies:
 - lucide-react 0.460.0 (for icons)
 - recharts 2.15.3 (for progress visualization)
 - @supabase/supabase-js 2.54.0 (for backend)
+
+### Recent Updates & Fixes
+
+#### Latest Features (2024)
+- **Timer Mode**: Added 60-second countdown timer with pause/resume functionality
+- **GraphVisualizer Component**: New component for rendering all graph types
+- **Visual Graph Integration**: All graph questions now display interactive visuals
+- **Performance Improvements**: Fixed ESLint warnings and circular dependencies
+
+#### Bug Fixes
+- Fixed tally chart rendering with non-overlapping diagonal marks
+- Removed answer display from clock question text
+- Corrected clock angle calculations (3:00 now correctly shows as right angle)
+- Fixed build errors related to React Hooks dependencies
 
 ### Testing
 
