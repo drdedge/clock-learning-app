@@ -97,7 +97,6 @@ const generateTimeDifference = () => {
   if (totalMinutes < 0) totalMinutes += 12 * 60;
   
   const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
   
   const formatTime = (h, m) => {
     return `${h}:${m === 0 ? '00' : m}`;
