@@ -349,7 +349,7 @@ const generateScaleProblems = () => {
   };
 };
 
-export default {
+const exports = {
   generateLengthConversion,
   generateMassConversion,
   generateVolumeConversion,
@@ -359,3 +359,5 @@ export default {
   generateSpeedDistance,
   generateScaleProblems
 };
+
+export default exports;

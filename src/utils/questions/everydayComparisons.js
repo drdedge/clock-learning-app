@@ -264,7 +264,7 @@ const generateProportionComparison = () => {
   };
 };
 
-export default {
+const exports = {
   generateCapacityComparison,
   generateLengthComparison,
   generateMassComparison,
@@ -275,3 +275,5 @@ export default {
   generateQuantityComparison,
   generateProportionComparison
 };
+
+export default exports;

@@ -19,7 +19,7 @@ npm install --legacy-peer-deps  # Use if encountering peer dependency issues
 
 ## Architecture Overview
 
-This is a React 19.0.0 educational app suite built with Create React App and Tailwind CSS. The app provides multiple educational games for children focused on math concepts. It uses a simple state-based navigation system (no React Router) with all pages configured centrally in `src/utils/pageConfig.js`.
+This is a React 19.0.0 educational app suite built with Create React App and Tailwind CSS. The app provides multiple educational games for children focused on 7+ UK mathematics. It uses a simple state-based navigation system (no React Router) with all pages configured centrally in `src/utils/pageConfig.js`.
 
 ### Current Apps
 
@@ -27,7 +27,13 @@ This is a React 19.0.0 educational app suite built with Create React App and Tai
 2. **Money Calculation**: Practice with coins and monetary values
 3. **Cake Fractions**: Visual fraction learning with cake slices
 4. **Number Line Fractions**: Understanding fractions on number lines
-5. **7+ Math Practice**: Comprehensive math quiz with multiple categories
+5. **7+ Math Practice**: Advanced quiz system with 15+ categories including:
+   - Time & Clock Problems (15-minute increments)
+   - 2D/3D Shape Properties (vertices, edges, faces)
+   - Symbol Algebra & Equations
+   - Graph Reading (bar, pie, line, pictograms)
+   - Unit Conversions (length, mass, volume)
+   - Real-World Comparisons
 
 ### Project Structure
 
@@ -40,52 +46,94 @@ src/
 │   │   ├── CakeFractionApp.js
 │   │   ├── NumberLineFractionApp.js
 │   │   └── SevenPlusQuizApp.js
-│   └── shared/             # Reusable components
-│       ├── PageWrapper.js
-│       └── SmileyLogo.js
+│   ├── shared/             # Reusable components
+│   │   ├── PageWrapper.js
+│   │   └── SmileyLogo.js
+│   └── visuals/           # Interactive visual components
+│       ├── InteractiveClock.js    # Draggable clock with touch support
+│       ├── ShapeVisualizer.js     # 2D/3D shape rendering
+│       └── FractionVisualizer.js  # Multiple fraction representations
 ├── utils/
 │   ├── pageConfig.js       # Central page configuration
-│   └── questions/          # Question generators for math practice
-│       ├── index.js        # Central exports for all generators
-│       ├── README.md       # Developer guide for adding questions
-│       └── [category].js   # Individual question category files
-└── App.js                  # Main app with navigation logic
+│   ├── supabase.js        # Supabase client and helpers
+│   └── questions/         # Question generators for math practice
+│       ├── index.js       # Dynamic question bank with no-repeat system
+│       ├── clockTime.js   # Time & schedule problems
+│       ├── shapes2D3D.js  # Shape properties & recognition
+│       ├── symbolAlgebra.js # Symbol equations & patterns
+│       ├── graphs.js      # Graph reading questions
+│       ├── unitConversions.js # Measurement conversions
+│       ├── everydayComparisons.js # Real-world estimations
+│       └── [legacy].js    # Original question categories
+├── hooks/
+│   └── useSupabase.js     # Custom hooks for data management
+└── App.js                 # Main app with navigation logic
 ```
 
-### Adding New Educational Apps
+### Visual Components
 
-1. Create a new component in `src/components/pages/` following the pattern of existing apps
-2. Add the page configuration to `src/utils/pageConfig.js`:
-   ```javascript
-   {
-     id: 'unique-id',
-     title: 'App Title',
-     component: YourNewApp,
-     bgColor: 'bg-pink-100' // Tailwind class for background
-   }
-   ```
+#### InteractiveClock
+- Draggable hour and minute hands
+- Touch and keyboard support
+- 15-minute snap points
+- Digital time display
+- Visual feedback for answers
 
-### Component Structure
+#### ShapeVisualizer
+- 2D shapes (triangle to hexagon)
+- 3D shape representations
+- Interactive vertex/edge highlighting
+- Property display panel
+- Build mode for construction
 
-- **Pages** (`src/components/pages/`): Individual educational app components
-- **Shared** (`src/components/shared/`): Reusable components like PageWrapper and SmileyLogo
-- **Navigation**: Handled in `src/App.js` using the PAGES configuration
-- **Questions** (`src/utils/questions/`): Modular question generators for the Math Practice app
+#### FractionVisualizer
+- Multiple visualization types (circle, bar, grid, number line)
+- Interactive fraction selection
+- Comparison mode
+- Arithmetic operations
+- Equivalent fractions display
 
 ### Math Practice Question System
 
-The 7+ Math Practice app uses a modular question generation system:
+The 7+ Math Practice app uses an advanced modular question generation system:
 
-- **Question Categories**: Word Problems, Money, Number Patterns, Place Value, Shapes, Measurement, Number Bonds, Mental Math, Fractions
-- **Adding Questions**: Create generators in `src/utils/questions/[category].js` and export them
-- **Focus Modes**: Automatically filters generators based on selected focus mode
-- **Developer Guide**: See `src/utils/questions/README.md` for detailed instructions
+#### Categories
+- **Classic**: Word Problems, Money, Number Patterns, Place Value, Shapes, Measurement, Number Bonds, Mental Math, Fractions
+- **Advanced 7+**: Clock Time, 2D/3D Shapes, Symbol Algebra, Graphs, Unit Conversions, Real World Comparisons
+
+#### Key Features
+- **Dynamic Question Bank**: No-repeat system tracks used questions
+- **15 Focus Modes**: Including '7+ Challenge' and subject-specific practice
+- **Visual Integration**: Questions can display clocks, shapes, and fractions
+- **Multiple Input Types**: Number, text, and multiple-choice
+- **Adaptive Tips**: Context-aware hints for wrong answers
+
+### Supabase Integration
+
+The app uses Supabase for cloud storage and real-time features:
+
+#### Configuration
+- **Client**: `src/utils/supabase.js`
+- **Hooks**: `src/hooks/useSupabase.js`
+- **Environment**: `.env.local` (required for API keys)
+
+#### Database Tables
+- `student_progress`: Track scores and performance
+- `visual_configs`: Store component settings
+- `question_templates`: Manage question parameters
+
+#### Features
+- Student progress tracking
+- Real-time updates
+- Leaderboards
+- Session management
+- Offline fallbacks
 
 ### Key Configuration Files
 
-- **`src/utils/pageConfig.js`**: Central configuration for all educational apps (navigation, titles, colors)
-- **`src/utils/questions/index.js`**: Exports all question generators for the Math Practice app
-- **`src/utils/questions/README.md`**: Comprehensive guide for adding new question types
+- **`src/utils/pageConfig.js`**: Central configuration for all educational apps
+- **`src/utils/questions/index.js`**: Dynamic question bank system with generators
+- **`.env.local`**: Supabase credentials (not committed to git)
 - **`.github/workflows/deploy.yml`**: GitHub Actions workflow for automatic deployment
 
 ### Styling Guidelines
@@ -97,25 +145,41 @@ The app uses a pink/purple girly theme with:
 - Child-friendly decorative elements (flowers, hearts, stars)
 - Consistent use of pink-500, purple-500, and their variants
 - Custom CSS animations for celebrations and interactions
+- Responsive design for tablets and mobile
 
-When creating new components, maintain consistency with existing Tailwind classes and color scheme.
-
-## Dependencies
+### Dependencies
 
 Key dependencies:
 - React 19.0.0
 - Tailwind CSS (via cra-template-tailwindcss)
 - lucide-react 0.460.0 (for icons)
 - recharts 2.15.3 (for progress visualization)
+- @supabase/supabase-js 2.54.0 (for backend)
 
-## Testing
+### Testing
 
 - **Framework**: Jest + React Testing Library (included with Create React App)
 - **Current State**: No test files exist yet - tests can be added as `*.test.js` or `*.spec.js` files
 - **Run Tests**: `npm test` (runs in watch mode)
 
-## Deployment
+### Deployment
 
-The app automatically deploys to GitHub Pages when changes are pushed to the main branch via GitHub Actions. The workflow is configured in `.github/workflows/deploy.yml`.
+The app automatically deploys to GitHub Pages when changes are pushed to the main branch via GitHub Actions.
+
+**GitHub Actions Workflow**: `.github/workflows/deploy.yml`
+- Triggers on push to main branch
+- Uses Node.js 18
+- Installs dependencies with `--legacy-peer-deps`
+- Builds and deploys to gh-pages branch
 
 **Production URL**: https://drdedge.github.io/clock-learning-app
+
+### Environment Variables
+
+Required for full functionality:
+```
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Note: The app will work without these but database features will be disabled.

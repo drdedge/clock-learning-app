@@ -1,6 +1,5 @@
 const generateBarChartReading = () => {
   const subjects = ["Maths", "English", "Science", "Art", "Music", "PE"];
-  const students = ["Emma", "Tom", "Sarah", "Jack", "Lily"];
   
   const data = {};
   const selectedSubjects = subjects.slice(0, 4);
@@ -232,7 +231,6 @@ const generatePieChart = () => {
       generate: () => {
         const index = Math.floor(Math.random() * data.length);
         const value = data[index];
-        const fraction = `${value}/${context.total}`;
         const simplified = simplifyFraction(value, context.total);
         
         return {
@@ -430,7 +428,7 @@ const simplifyFraction = (num, den) => {
   return `${num/g}/${den/g}`;
 };
 
-export default {
+const exports = {
   generateBarChartReading,
   generatePictogram,
   generateLineGraph,
@@ -438,3 +436,5 @@ export default {
   generateTallyChart,
   generateCarrollDiagram
 };
+
+export default exports;

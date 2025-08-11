@@ -259,7 +259,7 @@ const generateShapeAngles = () => {
   }
 };
 
-export default {
+const exports = {
   generateShapeIdentification,
   generateCountVertices2D,
   generateCountSides2D,
@@ -271,3 +271,5 @@ export default {
   generateShapePatterns,
   generateShapeAngles
 };
+
+export default exports;

@@ -376,7 +376,7 @@ const generateFunctionMachines = () => {
   };
 };
 
-export default {
+const exports = {
   generateSymbolEquations,
   generateAnimalSymbols,
   generateBalanceEquations,
@@ -387,3 +387,5 @@ export default {
   generateMissingNumber,
   generateFunctionMachines
 };
+
+export default exports;

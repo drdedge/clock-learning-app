@@ -1,8 +1,8 @@
 const generateReadingClock = () => {
   const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const minutes = [0, 15, 30, 45];
+  const minuteOptions = [0, 15, 30, 45];
   const hour = hours[Math.floor(Math.random() * hours.length)];
-  const minute = minutes[Math.floor(Math.random() * minutes.length)];
+  const minute = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
   
   const timeString = minute === 0 ? `${hour}:00` : 
                      minute === 15 ? `${hour}:15` :
@@ -19,7 +19,7 @@ const generateReadingClock = () => {
   
   while (options.length < 4) {
     const randomHour = hours[Math.floor(Math.random() * hours.length)];
-    const randomMinute = minutes[Math.floor(Math.random() * minutes.length)];
+    const randomMinute = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
     const wrongTime = randomMinute === 0 ? `${randomHour} o'clock` :
                       randomMinute === 15 ? `quarter past ${randomHour}` :
                       randomMinute === 30 ? `half past ${randomHour}` : 
@@ -289,7 +289,7 @@ const generateTimeWordProblem = () => {
   };
 };
 
-export default {
+const exports = {
   generateReadingClock,
   generateTimeElapsed,
   generateTimeDifference,
@@ -297,3 +297,5 @@ export default {
   generateClockAngles,
   generateTimeWordProblem
 };
+
+export default exports;
