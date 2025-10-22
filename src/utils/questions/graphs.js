@@ -520,6 +520,13 @@ const generateCarrollDiagram = () => {
           { label: "No/No", items: context.items["No/No"], count: context.items["No/No"].length }
         ]
       }
+    },
+    diagram: {
+      type: 'carroll',
+      rowLabel: context.property1,
+      colLabel: context.property2,
+      grid: context.items,
+      title: context.title
     }
   };
 };

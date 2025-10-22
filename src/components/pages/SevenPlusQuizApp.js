@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe, Pause, Play, AlarmClock, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle, XCircle, BookOpen, Target, Brain, Star, Award, Ruler, Shapes, Coins, BarChart3, Timer, Heart, Sparkles, Clock, Calculator, Globe, Pause, Play, AlarmClock, FileText, Eye } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import PageWrapper from '../shared/PageWrapper';
 import { generateDynamicQuiz, questionBank } from '../../utils/questions';
 import GraphVisualizer from '../visuals/GraphVisualizer';
+import DiagramVisualizer from '../visuals/DiagramVisualizer';
+import InteractiveClock from '../visuals/InteractiveClock';
+import ShapeVisualizer from '../visuals/ShapeVisualizer';
+import FractionVisualizer from '../visuals/FractionVisualizer';
 import ExamExportModal from '../modals/ExamExportModal';
 
 const SevenPlusQuizApp = () => {
@@ -15,7 +19,11 @@ const SevenPlusQuizApp = () => {
     const [inputValue, setInputValue] = useState('');
     const [questionStartTime, setQuestionStartTime] = useState(Date.now());
     const [answerTimes, setAnswerTimes] = useState({});
-    
+
+    // Clock answer state for interactive clock questions
+    const [clockAnswer, setClockAnswer] = useState({ hour: 12, minute: 0 });
+    const [clockAnswerSubmitted, setClockAnswerSubmitted] = useState(false);
+
     // Timer mode states
     const [timerMode, setTimerMode] = useState(() => {
         const saved = localStorage.getItem('sevenPlusTimerMode');
@@ -49,6 +57,8 @@ const SevenPlusQuizApp = () => {
         setQuestionStartTime(Date.now());
         setTimeRemaining(60);
         setIsPaused(false);
+        setClockAnswer({ hour: 12, minute: 0 });
+        setClockAnswerSubmitted(false);
     }, [focusMode, generateQuestions]);
 
     // Update question start time when navigating
@@ -58,7 +68,20 @@ const SevenPlusQuizApp = () => {
             setTimeRemaining(60);
             setIsPaused(false);
         }
-    }, [currentQuestion, timerMode, showResults]);
+
+        // Reset clock answer for new question
+        const currentQ = questions[currentQuestion];
+        if (currentQ && currentQ.clockTime) {
+            // Initialize with the question's clock time or default
+            setClockAnswer({
+                hour: currentQ.clockTime.hour || 12,
+                minute: currentQ.clockTime.minute || 0
+            });
+        } else {
+            setClockAnswer({ hour: 12, minute: 0 });
+        }
+        setClockAnswerSubmitted(false);
+    }, [currentQuestion, timerMode, showResults, questions]);
 
     // Timer countdown effect
     useEffect(() => {
@@ -218,6 +241,29 @@ const SevenPlusQuizApp = () => {
         setQuestionStartTime(Date.now());
         setTimeRemaining(60);
         setIsPaused(false);
+        setClockAnswer({ hour: 12, minute: 0 });
+        setClockAnswerSubmitted(false);
+    };
+
+    // Handle interactive clock time change
+    const handleClockTimeChange = (hour, minute) => {
+        setClockAnswer({ hour, minute });
+    };
+
+    // Submit clock answer
+    const handleClockSubmit = () => {
+        const timeSpent = (Date.now() - questionStartTime) / 1000;
+        const timeString = `${clockAnswer.hour}:${clockAnswer.minute === 0 ? '00' : clockAnswer.minute}`;
+
+        setUserAnswers({
+            ...userAnswers,
+            [currentQuestion]: timeString
+        });
+        setAnswerTimes({
+            ...answerTimes,
+            [currentQuestion]: timeSpent
+        });
+        setClockAnswerSubmitted(true);
     };
 
     // Clock display component for clock questions
@@ -344,6 +390,148 @@ const SevenPlusQuizApp = () => {
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Visual Learning Insights */}
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
+                            {/* Visual vs Text-Only Performance */}
+                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 border-2 border-purple-200">
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <Eye className="w-5 h-5 text-purple-600" />
+                                    Visual Learning Analysis
+                                </h3>
+                                {(() => {
+                                    const visualQuestions = questions.filter(q => q.visual || q.diagram || q.shape || q.fractionVisual || q.clockTime);
+                                    const textOnlyQuestions = questions.filter(q => !q.visual && !q.diagram && !q.shape && !q.fractionVisual && !q.clockTime);
+
+                                    const visualCorrect = visualQuestions.filter((q, i) => {
+                                        const userAnswer = userAnswers[i];
+                                        return q.inputType === 'text'
+                                            ? userAnswer?.toString().toLowerCase() === q.answer?.toString().toLowerCase()
+                                            : userAnswer === q.answer;
+                                    }).length;
+
+                                    const textCorrect = textOnlyQuestions.filter((q, i) => {
+                                        const userAnswer = userAnswers[questions.indexOf(q)];
+                                        return q.inputType === 'text'
+                                            ? userAnswer?.toString().toLowerCase() === q.answer?.toString().toLowerCase()
+                                            : userAnswer === q.answer;
+                                    }).length;
+
+                                    const visualPercentage = visualQuestions.length > 0
+                                        ? Math.round((visualCorrect / visualQuestions.length) * 100)
+                                        : 0;
+                                    const textPercentage = textOnlyQuestions.length > 0
+                                        ? Math.round((textCorrect / textOnlyQuestions.length) * 100)
+                                        : 0;
+
+                                    return (
+                                        <>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="font-semibold text-purple-700">📊 With Visuals:</span>
+                                                        <span className="text-lg font-bold text-purple-900">{visualCorrect}/{visualQuestions.length} ({visualPercentage}%)</span>
+                                                    </div>
+                                                    <div className="bg-gray-200 rounded-full h-3">
+                                                        <div
+                                                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
+                                                            style={{ width: `${visualPercentage}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="font-semibold text-gray-700">📝 Text Only:</span>
+                                                        <span className="text-lg font-bold text-gray-900">{textCorrect}/{textOnlyQuestions.length} ({textPercentage}%)</span>
+                                                    </div>
+                                                    <div className="bg-gray-200 rounded-full h-3">
+                                                        <div
+                                                            className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500"
+                                                            style={{ width: `${textPercentage}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p className="mt-4 text-sm text-gray-700 italic">
+                                                {visualPercentage > textPercentage + 10
+                                                    ? "💡 You learn better with visual aids! Keep using diagrams, shapes, and graphs."
+                                                    : textPercentage > visualPercentage + 10
+                                                    ? "💡 You excel at text-based problems! Visual questions might need more practice."
+                                                    : "💡 You perform equally well with and without visuals. Great balanced skills!"}
+                                            </p>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+
+                            {/* Personalized Recommendations */}
+                            <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg p-6 border-2 border-pink-200">
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <Target className="w-5 h-5 text-pink-600" />
+                                    Focus Recommendations
+                                </h3>
+                                {(() => {
+                                    // Find weakest categories
+                                    const weakCategories = Object.entries(categoryResults)
+                                        .filter(([_, result]) => result.total > 0)
+                                        .map(([category, result]) => ({
+                                            category,
+                                            percentage: Math.round((result.correct / result.total) * 100),
+                                            total: result.total
+                                        }))
+                                        .sort((a, b) => a.percentage - b.percentage)
+                                        .slice(0, 3);
+
+                                    // Find fastest category
+                                    const categoryTimes = {};
+                                    questions.forEach((q, i) => {
+                                        if (!categoryTimes[q.category]) categoryTimes[q.category] = [];
+                                        if (answerTimes[i]) categoryTimes[q.category].push(answerTimes[i]);
+                                    });
+
+                                    const avgCategoryTimes = Object.entries(categoryTimes)
+                                        .map(([category, times]) => ({
+                                            category,
+                                            avgTime: times.reduce((a, b) => a + b, 0) / times.length
+                                        }))
+                                        .sort((a, b) => a.avgTime - b.avgTime);
+
+                                    return (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <p className="font-semibold text-pink-700 mb-2">🎯 Areas to Practice:</p>
+                                                <ul className="space-y-1 text-sm">
+                                                    {weakCategories.map(cat => (
+                                                        <li key={cat.category} className="flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-pink-400"></span>
+                                                            <span>{cat.category} ({cat.percentage}%)</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            {avgCategoryTimes.length > 0 && (
+                                                <div>
+                                                    <p className="font-semibold text-purple-700 mb-2">⚡ Your Strength:</p>
+                                                    <p className="text-sm">
+                                                        You're fastest at <strong>{avgCategoryTimes[0].category}</strong> ({avgCategoryTimes[0].avgTime.toFixed(1)}s average)
+                                                    </p>
+                                                </div>
+                                            )}
+                                            <div className="mt-4 p-3 bg-white rounded-lg border border-pink-200">
+                                                <p className="text-xs font-semibold text-gray-700 mb-1">💖 Next Steps:</p>
+                                                <p className="text-xs text-gray-600">
+                                                    {percentage >= 90
+                                                        ? "Outstanding work! Try the 7+ Challenge mode for harder questions."
+                                                        : percentage >= 70
+                                                        ? "Great progress! Focus on your weaker categories for improvement."
+                                                        : "Keep practicing! Start with one category at a time to build confidence."}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
 
@@ -611,15 +799,72 @@ const SevenPlusQuizApp = () => {
                                     {current.question}
                                 </p>
                                 {/* Display clock if it's a clock question */}
-                                {current.clockTime && (
+                                {current.clockTime && current.inputType === 'multiple-choice' && (
                                     <ClockDisplay hour={current.clockTime.hour} minute={current.clockTime.minute} />
+                                )}
+                                {/* Display interactive clock for setting time */}
+                                {current.clockTime && current.inputType !== 'multiple-choice' && (
+                                    <div className="mt-4 flex flex-col items-center">
+                                        <InteractiveClock
+                                            initialHour={clockAnswer.hour}
+                                            initialMinute={clockAnswer.minute}
+                                            onTimeChange={handleClockTimeChange}
+                                            showDigital={true}
+                                            size={250}
+                                            snapToQuarters={true}
+                                            theme="pink"
+                                        />
+                                        <button
+                                            onClick={handleClockSubmit}
+                                            disabled={clockAnswerSubmitted}
+                                            className={`mt-4 px-6 py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg ${
+                                                clockAnswerSubmitted
+                                                    ? 'bg-green-500 text-white cursor-default'
+                                                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600'
+                                            }`}
+                                        >
+                                            {clockAnswerSubmitted ? '✓ Time Set!' : 'Set Time'}
+                                        </button>
+                                    </div>
                                 )}
                                 {/* Display graph if it's a graph question */}
                                 {current.visual && (
                                     <div className="mt-4">
-                                        <GraphVisualizer 
-                                            graphType={current.visual.graphType} 
-                                            graphData={current.visual.graphData} 
+                                        <GraphVisualizer
+                                            graphType={current.visual.graphType}
+                                            graphData={current.visual.graphData}
+                                        />
+                                    </div>
+                                )}
+                                {/* Display diagram if it's a diagram question */}
+                                {current.diagram && (
+                                    <div className="mt-4">
+                                        <DiagramVisualizer
+                                            diagramType={current.diagram.type}
+                                            data={current.diagram}
+                                        />
+                                    </div>
+                                )}
+                                {/* Display shape if it's a shape question */}
+                                {current.shape && (
+                                    <div className="mt-4 flex justify-center">
+                                        <ShapeVisualizer
+                                            shapeType={current.shape.name}
+                                            enable3D={current.shape.type === '3d'}
+                                            mode={current.shape.mode}
+                                            highlightFeature={current.shape.highlightFeature}
+                                        />
+                                    </div>
+                                )}
+                                {/* Display fraction visual if it's a fraction question */}
+                                {current.fractionVisual && (
+                                    <div className="mt-4 flex justify-center">
+                                        <FractionVisualizer
+                                            type={current.fractionVisual.type}
+                                            numerator={current.fractionVisual.numerator}
+                                            denominator={current.fractionVisual.denominator}
+                                            secondFraction={current.fractionVisual.secondFraction}
+                                            mode={current.fractionVisual.mode || 'display'}
                                         />
                                     </div>
                                 )}
@@ -637,41 +882,43 @@ const SevenPlusQuizApp = () => {
                     </div>
 
                     {/* Answer Input */}
-                    <div className="mb-6">
-                        {current.inputType === 'multiple-choice' ? (
-                            <>
-                                <label className="block text-lg font-bold text-purple-700 mb-3">🌸 Choose your answer:</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {current.options.map((option, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleAnswer(index)}
-                                            className={`p-4 text-lg border-2 rounded-xl font-bold transition-all transform hover:scale-105 ${
-                                                userAnswers[currentQuestion] === index
-                                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-purple-500 shadow-lg'
-                                                    : 'bg-white text-gray-700 border-pink-300 hover:border-purple-400 hover:bg-pink-50'
-                                            }`}
-                                        >
-                                            {option}
-                                        </button>
-                                    ))}
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <label className="block text-lg font-bold text-purple-700 mb-2">
-                                    💖 Your Answer {current.unit ? `(in ${current.unit})` : ''}:
-                                </label>
-                                <input
-                                    type="text"
-                                    value={inputValue}
-                                    onChange={(e) => handleAnswer(e.target.value)}
-                                    className="w-full p-4 text-2xl border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none text-center font-bold bg-pink-50 shadow-inner"
-                                    placeholder={current.inputType === 'text' ? "Type your answer" : "Enter a number"}
-                                />
-                            </>
-                        )}
-                    </div>
+                    {!current.clockTime || current.inputType === 'multiple-choice' ? (
+                        <div className="mb-6">
+                            {current.inputType === 'multiple-choice' ? (
+                                <>
+                                    <label className="block text-lg font-bold text-purple-700 mb-3">🌸 Choose your answer:</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {current.options.map((option, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => handleAnswer(index)}
+                                                className={`p-4 text-lg border-2 rounded-xl font-bold transition-all transform hover:scale-105 ${
+                                                    userAnswers[currentQuestion] === index
+                                                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-purple-500 shadow-lg'
+                                                        : 'bg-white text-gray-700 border-pink-300 hover:border-purple-400 hover:bg-pink-50'
+                                                }`}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <label className="block text-lg font-bold text-purple-700 mb-2">
+                                        💖 Your Answer {current.unit ? `(in ${current.unit})` : ''}:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={inputValue}
+                                        onChange={(e) => handleAnswer(e.target.value)}
+                                        className="w-full p-4 text-2xl border-2 border-pink-300 rounded-xl focus:border-purple-400 focus:outline-none text-center font-bold bg-pink-50 shadow-inner"
+                                        placeholder={current.inputType === 'text' ? "Type your answer" : "Enter a number"}
+                                    />
+                                </>
+                            )}
+                        </div>
+                    ) : null}
 
                     {/* Navigation */}
                     <div className="flex gap-4">

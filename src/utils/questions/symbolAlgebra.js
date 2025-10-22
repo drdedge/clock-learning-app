@@ -254,11 +254,23 @@ const generateDiagramProblems = () => {
         const white1 = Math.floor(Math.random() * 4) + 2;
         const center = (grey1 + grey2) * (white1 + 4);
         const white2 = 4;
-        
+
         return {
           question: `In the diagram, the sum of the two grey circles multiplied by the sum of the two white circles equals the center.\nGrey circles: ${grey1} and ${grey2}\nWhite circles: ${white1} and ?\nCenter: ${center}\nWhat is the missing white circle?`,
           answer: white2,
-          tip: `Grey sum: ${grey1} + ${grey2} = ${grey1 + grey2}. So (${grey1 + grey2}) × (${white1} + ?) = ${center}`
+          tip: `Grey sum: ${grey1} + ${grey2} = ${grey1 + grey2}. So (${grey1 + grey2}) × (${white1} + ?) = ${center}`,
+          diagram: {
+            type: 'symbolGrid',
+            size: '2x2',
+            cells: [
+              { symbol: '⚫', value: grey1, color: 'Grey' },
+              { symbol: '⚫', value: grey2, color: 'Grey' },
+              { symbol: '⚪', value: white1, color: 'White' },
+              { symbol: '⚪', value: '?', color: 'White' }
+            ],
+            title: 'Circle Values',
+            description: `Grey sum × White sum = ${center}`
+          }
         };
       }
     },
@@ -269,26 +281,39 @@ const generateDiagramProblems = () => {
         const grey2 = Math.floor(Math.random() * 3) + 2;
         const center = 48;
         const grey1 = Math.floor(center / (black1 + black2)) - grey2;
-        
+
         return {
           question: `In the diagram, the sum of the two black circles multiplied by the sum of the two grey circles equals the center.\nBlack circles: ${black1} and ${black2}\nGrey circles: ? and ${grey2}\nCenter: ${center}\nWhat is the missing grey circle?`,
           answer: grey1,
-          tip: `Black sum: ${black1} + ${black2} = ${black1 + black2}. So (${black1 + black2}) × (? + ${grey2}) = ${center}`
+          tip: `Black sum: ${black1} + ${black2} = ${black1 + black2}. So (${black1 + black2}) × (? + ${grey2}) = ${center}`,
+          diagram: {
+            type: 'symbolGrid',
+            size: '2x2',
+            cells: [
+              { symbol: '⚫', value: black1, color: 'Black' },
+              { symbol: '⚫', value: black2, color: 'Black' },
+              { symbol: '🔘', value: '?', color: 'Grey' },
+              { symbol: '🔘', value: grey2, color: 'Grey' }
+            ],
+            title: 'Circle Values',
+            description: `Black sum × Grey sum = ${center}`
+          }
         };
       }
     }
   ];
-  
+
   const selected = scenarios[Math.floor(Math.random() * scenarios.length)];
   const problem = selected.setup();
-  
+
   return {
     question: problem.question,
     answer: problem.answer,
     category: "Algebra",
     skill: "Diagram Problems",
     tip: problem.tip,
-    inputType: "number"
+    inputType: "number",
+    diagram: problem.diagram
   };
 };
 
