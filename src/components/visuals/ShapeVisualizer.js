@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shapes, RotateCw, Eye, EyeOff, Info } from 'lucide-react';
+import { Shapes, RotateCw } from 'lucide-react';
 
 const ShapeVisualizer = ({
   shapeType = 'triangle',
@@ -15,7 +15,6 @@ const ShapeVisualizer = ({
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
   const [selectedVertices, setSelectedVertices] = useState([]);
   const [hoveredElement, setHoveredElement] = useState(null);
-  const [showInfo, setShowInfo] = useState(false);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
 
@@ -298,6 +297,11 @@ const ShapeVisualizer = ({
       case 'triangularPrism':
         drawTriangularPrism(ctx, scale);
         break;
+
+      default:
+        // Default to cube if unknown shape
+        drawCube(ctx, scale);
+        break;
     }
 
     ctx.restore();
@@ -543,12 +547,13 @@ const ShapeVisualizer = ({
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    
+
     if (enable3D) {
       draw3DShape(ctx);
     } else {
       draw2DShape(ctx);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shapeType, highlightFeature, rotation, enable3D]);
 
   // Handle vertex selection in build mode

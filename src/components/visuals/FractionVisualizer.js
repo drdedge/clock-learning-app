@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { PieChart, Minus, Plus, Equal, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Minus, Plus } from 'lucide-react';
 
 const FractionVisualizer = ({
   numerator = 1,
@@ -16,8 +16,6 @@ const FractionVisualizer = ({
 }) => {
   const [selectedParts, setSelectedParts] = useState([]);
   const [equivalentFractions, setEquivalentFractions] = useState([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragValue, setDragValue] = useState(0);
   const canvasRef = useRef(null);
 
   // Color themes
@@ -209,7 +207,7 @@ const FractionVisualizer = ({
   };
 
   // Main drawing function
-  const draw = () => {
+  const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -278,6 +276,11 @@ const FractionVisualizer = ({
       case 'numberLine':
         drawNumberLine(ctx, 30, centerY, size - 60, numerator, denominator);
         break;
+
+      default:
+        // Default to circle visualization
+        drawCircle(ctx, centerX, centerY, size/3, numerator, denominator);
+        break;
     }
     
     // Draw arithmetic operation if specified
@@ -313,6 +316,12 @@ const FractionVisualizer = ({
           resultNum = numerator * compareWith.denominator;
           resultDen = denominator * compareWith.numerator;
           break;
+
+        default:
+          // Default to no operation
+          resultNum = numerator;
+          resultDen = denominator;
+          break;
       }
       
       // Simplify result
@@ -325,7 +334,8 @@ const FractionVisualizer = ({
       ctx.fillText('=', centerX, size - 50);
       ctx.fillText(`${resultNum}/${resultDen}`, centerX, size - 20);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numerator, denominator, visualType, mode, compareWith, operation, selectedParts, size, currentTheme]);
 
   // Handle canvas click for interactive mode
   const handleCanvasClick = (e) => {
@@ -384,7 +394,7 @@ const FractionVisualizer = ({
   // Draw on mount and when dependencies change
   useEffect(() => {
     draw();
-  }, [numerator, denominator, visualType, mode, compareWith, operation, selectedParts]);
+  }, [draw]);
 
   // Convert to mixed number
   const getMixedNumber = () => {

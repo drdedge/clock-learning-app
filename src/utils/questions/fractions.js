@@ -27,10 +27,10 @@ const simplifyFraction = (num, den) => {
     return { numerator: num / g, denominator: den / g };
 };
 
-// Helper function to convert fraction to decimal
-const fractionToDecimal = (num, den) => {
-    return Math.round((num / den) * 100) / 100;
-};
+// Helper function to convert fraction to decimal (kept for potential future use)
+// const fractionToDecimal = (num, den) => {
+//     return Math.round((num / den) * 100) / 100;
+// };
 
 // EXISTING GENERATORS (Updated with fractionVisual)
 

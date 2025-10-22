@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Clock, Check, X } from 'lucide-react';
 
 const InteractiveClock = ({ 
@@ -61,14 +61,14 @@ const InteractiveClock = ({
     }
   }, [hour, minute, correctHour, correctMinute, showAnswer]);
 
-  const calculateAngleFromPosition = (clientX, clientY, isHourHand = false) => {
+  const calculateAngleFromPosition = useCallback((clientX, clientY, isHourHand = false) => {
     const rect = svgRef.current.getBoundingClientRect();
     const x = clientX - rect.left - centerX;
     const y = clientY - rect.top - centerY;
-    
+
     let angle = Math.atan2(y, x) * (180 / Math.PI) + 90;
     if (angle < 0) angle += 360;
-    
+
     if (isHourHand) {
       // Hour hand moves in 30-degree increments (360/12)
       const hourValue = Math.round(angle / 30) % 12;
@@ -76,19 +76,19 @@ const InteractiveClock = ({
     } else {
       // Minute hand
       let minuteValue = Math.round(angle / 6) % 60;
-      
+
       // Snap to quarter hours if enabled
       if (snapToQuarters) {
         const quarters = [0, 15, 30, 45];
-        const closest = quarters.reduce((prev, curr) => 
+        const closest = quarters.reduce((prev, curr) =>
           Math.abs(curr - minuteValue) < Math.abs(prev - minuteValue) ? curr : prev
         );
         minuteValue = closest;
       }
-      
+
       return { angle: minuteValue * 6, value: minuteValue };
     }
-  };
+  }, [snapToQuarters, centerX, centerY]);
 
   const handleMouseDown = (e, handType) => {
     if (readOnly) return;
@@ -96,17 +96,17 @@ const InteractiveClock = ({
     setIsDragging(handType);
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (!isDragging || readOnly) return;
-    
+
     const { value } = calculateAngleFromPosition(e.clientX, e.clientY, isDragging === 'hour');
-    
+
     if (isDragging === 'hour') {
       setHour(value);
     } else if (isDragging === 'minute') {
       setMinute(value);
     }
-  };
+  }, [isDragging, readOnly, calculateAngleFromPosition]);
 
   const handleMouseUp = () => {
     setIsDragging(null);
@@ -118,18 +118,18 @@ const InteractiveClock = ({
     setIsDragging(handType);
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = useCallback((e) => {
     if (!isDragging || readOnly) return;
-    
+
     const touch = e.touches[0];
     const { value } = calculateAngleFromPosition(touch.clientX, touch.clientY, isDragging === 'hour');
-    
+
     if (isDragging === 'hour') {
       setHour(value);
     } else if (isDragging === 'minute') {
       setMinute(value);
     }
-  };
+  }, [isDragging, readOnly, calculateAngleFromPosition]);
 
   useEffect(() => {
     if (isDragging) {
@@ -145,7 +145,7 @@ const InteractiveClock = ({
         window.removeEventListener('touchend', handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleTouchMove]);
 
   const hourAngle = (hour % 12) * 30 + (minute / 60) * 30;
   const minuteAngle = minute * 6;
@@ -183,6 +183,10 @@ const InteractiveClock = ({
       case 'ArrowRight':
         e.preventDefault();
         setHour(h => (h % 12) + 1 || 12);
+        break;
+
+      default:
+        // No action for other keys
         break;
     }
   };
