@@ -60,76 +60,147 @@ class DynamicQuestionBank {
         this.usedQuestions = new Set();
         this.questionHistory = [];
         this.maxHistorySize = 50;
+        this.difficulty = 'easy'; // Current difficulty level
+        this.consecutiveCorrect = 0;
+        this.consecutiveIncorrect = 0;
+        this.correctTimes = []; // Track recent correct answer times
     }
-    
+
     reset() {
         this.usedQuestions.clear();
         this.questionHistory = [];
+        // Don't reset difficulty tracking - preserve across quiz resets
+    }
+
+    resetDifficulty() {
+        this.difficulty = 'easy';
+        this.consecutiveCorrect = 0;
+        this.consecutiveIncorrect = 0;
+        this.correctTimes = [];
+    }
+
+    updateDifficulty(wasCorrect, timeSpent) {
+        if (wasCorrect) {
+            this.consecutiveCorrect++;
+            this.consecutiveIncorrect = 0;
+            this.correctTimes.push(timeSpent);
+
+            // Keep only the last 3 times for evaluation
+            if (this.correctTimes.length > 3) {
+                this.correctTimes.shift();
+            }
+
+            // Increase difficulty after 3 consecutive correct answers in < 10 seconds each
+            if (this.consecutiveCorrect >= 3 && this.correctTimes.length >= 3) {
+                const allFast = this.correctTimes.every(time => time < 10);
+
+                if (allFast) {
+                    if (this.difficulty === 'easy') {
+                        this.difficulty = 'medium';
+                        this.consecutiveCorrect = 0;
+                        this.correctTimes = [];
+                    } else if (this.difficulty === 'medium') {
+                        this.difficulty = 'hard';
+                        this.consecutiveCorrect = 0;
+                        this.correctTimes = [];
+                    }
+                }
+            }
+        } else {
+            this.consecutiveIncorrect++;
+            this.consecutiveCorrect = 0;
+            this.correctTimes = [];
+
+            // Decrease difficulty after 2 consecutive wrong answers
+            if (this.consecutiveIncorrect >= 2) {
+                if (this.difficulty === 'hard') {
+                    this.difficulty = 'medium';
+                    this.consecutiveIncorrect = 0;
+                } else if (this.difficulty === 'medium') {
+                    this.difficulty = 'easy';
+                    this.consecutiveIncorrect = 0;
+                }
+            }
+        }
+
+        return this.difficulty;
+    }
+
+    getDifficulty() {
+        return this.difficulty;
     }
     
-    generateUniqueQuestion(generatorNames, maxAttempts = 10) {
+    generateUniqueQuestion(generatorNames, maxAttempts = 10, difficulty = null) {
+        // Use provided difficulty or the current difficulty level
+        const currentDifficulty = difficulty || this.difficulty;
+
         // Filter out any generators that have been exhausted
-        const availableGenerators = generatorNames.filter(name => 
+        const availableGenerators = generatorNames.filter(name =>
             questionGenerators[name] && typeof questionGenerators[name] === 'function'
         );
-        
+
         if (availableGenerators.length === 0) {
             console.error('No valid generators available');
             return null;
         }
-        
+
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
             // Randomly select a generator
             const generatorName = availableGenerators[Math.floor(Math.random() * availableGenerators.length)];
             const generator = questionGenerators[generatorName];
-            
+
             try {
-                const question = generator();
-                
+                // Try to pass difficulty to the generator
+                // Generators that don't support difficulty will ignore it
+                const question = generator(currentDifficulty);
+
                 // Create a unique key for the question
                 const questionKey = JSON.stringify({
                     q: question.question,
                     a: question.answer
                 });
-                
+
                 // Check if we've used this exact question before
                 if (!this.usedQuestions.has(questionKey)) {
                     this.usedQuestions.add(questionKey);
                     this.questionHistory.push(questionKey);
-                    
+
                     // Maintain history size limit
                     if (this.questionHistory.length > this.maxHistorySize) {
                         const oldKey = this.questionHistory.shift();
                         this.usedQuestions.delete(oldKey);
                     }
-                    
+
+                    // Add difficulty metadata to question
+                    question.difficultyLevel = currentDifficulty;
+
                     return question;
                 }
             } catch (error) {
                 console.error(`Error generating question with ${generatorName}:`, error);
             }
         }
-        
+
         // If we couldn't find a unique question, reset and try again
         if (this.questionHistory.length > 20) {
             this.reset();
-            return this.generateUniqueQuestion(generatorNames, 1);
+            return this.generateUniqueQuestion(generatorNames, 1, currentDifficulty);
         }
-        
+
         return null;
     }
     
-    generateQuestionSet(generatorNames, count = 20) {
+    generateQuestionSet(generatorNames, count = 20, difficulty = null) {
         const questions = [];
         const bank = new DynamicQuestionBank();
-        
+
         for (let i = 0; i < count; i++) {
-            const question = bank.generateUniqueQuestion(generatorNames);
+            const question = bank.generateUniqueQuestion(generatorNames, 10, difficulty);
             if (question) {
                 questions.push(question);
             }
         }
-        
+
         return questions;
     }
 }
@@ -195,9 +266,9 @@ export const getGeneratorsForFocusMode = (focusMode) => {
 };
 
 // Helper function to generate a quiz with no repetition
-export const generateDynamicQuiz = (focusMode = 'all', questionCount = 20) => {
+export const generateDynamicQuiz = (focusMode = 'all', questionCount = 20, difficulty = null) => {
     const generators = getGeneratorsForFocusMode(focusMode);
-    return questionBank.generateQuestionSet(generators, questionCount);
+    return questionBank.generateQuestionSet(generators, questionCount, difficulty);
 };
 
 // Export individual category modules for direct access if needed

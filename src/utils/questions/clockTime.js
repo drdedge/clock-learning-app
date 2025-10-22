@@ -1,6 +1,16 @@
-const generateReadingClock = () => {
+const generateReadingClock = (difficulty = 'medium') => {
   const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const minuteOptions = [0, 15, 30, 45];
+
+  // Difficulty-based minute options
+  let minuteOptions;
+  if (difficulty === 'easy') {
+    minuteOptions = [0, 30]; // Only o'clock and half past
+  } else if (difficulty === 'medium') {
+    minuteOptions = [0, 15, 30, 45]; // Quarter intervals
+  } else {
+    minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]; // All 5-minute intervals
+  }
+
   const hour = hours[Math.floor(Math.random() * hours.length)];
   const minute = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
   
@@ -42,10 +52,21 @@ const generateReadingClock = () => {
   };
 };
 
-const generateTimeElapsed = () => {
+const generateTimeElapsed = (difficulty = 'medium') => {
   const startHours = Math.floor(Math.random() * 11) + 1;
-  const startMinutes = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
-  const elapsedOptions = [15, 30, 45, 60, 75, 90, 105, 120];
+
+  // Difficulty-based time intervals
+  let startMinutes, elapsedOptions;
+  if (difficulty === 'easy') {
+    startMinutes = [0, 30][Math.floor(Math.random() * 2)];
+    elapsedOptions = [30, 60]; // Simple half-hour and hour
+  } else if (difficulty === 'medium') {
+    startMinutes = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+    elapsedOptions = [15, 30, 45, 60, 75, 90];
+  } else {
+    startMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55][Math.floor(Math.random() * 12)];
+    elapsedOptions = [15, 30, 45, 60, 75, 90, 105, 120, 135, 150];
+  }
   const elapsedMinutes = elapsedOptions[Math.floor(Math.random() * elapsedOptions.length)];
   
   let endHours = startHours;
@@ -83,13 +104,29 @@ const generateTimeElapsed = () => {
   };
 };
 
-const generateTimeDifference = () => {
+const generateTimeDifference = (difficulty = 'medium') => {
   const hour1 = Math.floor(Math.random() * 11) + 1;
-  const minute1 = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
-  
-  let hour2 = hour1 + Math.floor(Math.random() * 4) + 1;
+
+  // Difficulty-based minute intervals
+  let minute1, minute2;
+  if (difficulty === 'easy') {
+    minute1 = [0, 30][Math.floor(Math.random() * 2)];
+  } else if (difficulty === 'medium') {
+    minute1 = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+  } else {
+    minute1 = Math.floor(Math.random() * 12) * 5; // Any 5-minute interval
+  }
+
+  let hour2 = hour1 + Math.floor(Math.random() * (difficulty === 'easy' ? 2 : 4)) + 1;
   if (hour2 > 12) hour2 -= 12;
-  const minute2 = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+
+  if (difficulty === 'easy') {
+    minute2 = [0, 30][Math.floor(Math.random() * 2)];
+  } else if (difficulty === 'medium') {
+    minute2 = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+  } else {
+    minute2 = Math.floor(Math.random() * 12) * 5;
+  }
   
   let totalMinutes = (hour2 - hour1) * 60 + (minute2 - minute1);
   if (totalMinutes < 0) totalMinutes += 12 * 60;
@@ -111,7 +148,7 @@ const generateTimeDifference = () => {
   };
 };
 
-const generateScheduleProblem = () => {
+const generateScheduleProblem = (difficulty = 'medium') => {
   const activities = [
     { name: "swimming lesson", duration: 45 },
     { name: "piano practice", duration: 30 },
@@ -121,11 +158,14 @@ const generateScheduleProblem = () => {
     { name: "art class", duration: 60 },
     { name: "sports practice", duration: 90 }
   ];
-  
+
   const startHour = Math.floor(Math.random() * 8) + 2;
-  const startMinute = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
-  
-  const numActivities = Math.floor(Math.random() * 2) + 2;
+  const startMinute = difficulty === 'easy' ? [0, 30][Math.floor(Math.random() * 2)] : [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+
+  // Easy: 1-2 activities, Medium: 2-3 activities, Hard: 3-4 activities
+  const numActivities = difficulty === 'easy' ? Math.floor(Math.random() * 2) + 1 :
+                         difficulty === 'medium' ? Math.floor(Math.random() * 2) + 2 :
+                         Math.floor(Math.random() * 2) + 3;
   const selectedActivities = [];
   let totalMinutes = 0;
   
@@ -175,16 +215,33 @@ const generateScheduleProblem = () => {
   };
 };
 
-const generateClockAngles = () => {
-  const times = [
+const generateClockAngles = (difficulty = 'medium') => {
+  // Easy: Simple angles at o'clock positions
+  const easyTimes = [
     { hour: 3, minute: 0, angle: 90, description: "right angle" },
     { hour: 6, minute: 0, angle: 180, description: "straight angle" },
-    { hour: 9, minute: 0, angle: 90, description: "right angle" },
-    { hour: 12, minute: 0, angle: 0, description: "no angle" },
+    { hour: 9, minute: 0, angle: 90, description: "right angle" }
+  ];
+
+  // Medium: Include quarter positions
+  const mediumTimes = [
+    ...easyTimes,
     { hour: 12, minute: 15, angle: 90, description: "right angle" },
     { hour: 12, minute: 30, angle: 180, description: "straight angle" }
   ];
-  
+
+  // Hard: More complex angles
+  const hardTimes = [
+    ...mediumTimes,
+    { hour: 1, minute: 0, angle: 30, description: "acute angle" },
+    { hour: 2, minute: 0, angle: 60, description: "acute angle" },
+    { hour: 4, minute: 0, angle: 120, description: "obtuse angle" },
+    { hour: 5, minute: 0, angle: 150, description: "obtuse angle" }
+  ];
+
+  const times = difficulty === 'easy' ? easyTimes :
+                difficulty === 'medium' ? mediumTimes : hardTimes;
+
   const selected = times[Math.floor(Math.random() * times.length)];
   
   const formatTime = (h, m) => {
@@ -201,8 +258,63 @@ const generateClockAngles = () => {
   };
 };
 
-const generateTimeWordProblem = () => {
-  const scenarios = [
+const generateSetClock = (difficulty = 'medium') => {
+  const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  let minuteOptions;
+
+  // Difficulty-based minute options
+  if (difficulty === 'easy') {
+    minuteOptions = [0, 30]; // Only o'clock and half past
+  } else if (difficulty === 'medium') {
+    minuteOptions = [0, 15, 30, 45]; // Quarter intervals
+  } else {
+    minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]; // All 5-minute intervals
+  }
+
+  const targetHour = hours[Math.floor(Math.random() * hours.length)];
+  const targetMinute = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
+
+  const timeWords = targetMinute === 0 ? `${targetHour} o'clock` :
+                    targetMinute === 15 ? `quarter past ${targetHour}` :
+                    targetMinute === 30 ? `half past ${targetHour}` :
+                    targetMinute === 45 ? `quarter to ${targetHour === 12 ? 1 : targetHour + 1}` :
+                    `${targetMinute} minutes past ${targetHour}`;
+
+  const formatTime = (h, m) => {
+    return `${h}:${m === 0 ? '00' : m}`;
+  };
+
+  return {
+    question: `Set the clock to show ${timeWords}`,
+    answer: formatTime(targetHour, targetMinute),
+    category: "Time",
+    skill: "Setting Clocks",
+    tip: "Remember: quarter past = 15 minutes after, half past = 30 minutes after, quarter to = 15 minutes before",
+    inputType: "text",
+    clockTime: { hour: 12, minute: 0 } // Start at 12:00 for user to set
+  };
+};
+
+const generateTimeWordProblem = (difficulty = 'medium') => {
+  // Easy scenarios: Fewer steps, simpler times
+  const easyScenarios = [
+    {
+      setup: "starts homework at 3:00 PM",
+      events: [
+        { action: "does maths", time: 30 },
+        { action: "does English", time: 30 }
+      ]
+    },
+    {
+      setup: "begins lunch at 12:00 PM",
+      events: [
+        { action: "eats lunch", time: 30 },
+        { action: "plays outside", time: 30 }
+      ]
+    }
+  ];
+
+  const mediumScenarios = [
     {
       setup: "leaves school at 3:30 PM",
       events: [
@@ -233,7 +345,33 @@ const generateTimeWordProblem = () => {
       ]
     }
   ];
-  
+
+  // Hard scenarios: More complex, irregular times
+  const hardScenarios = [
+    {
+      setup: "starts their day at 6:45 AM",
+      events: [
+        { action: "gets ready", time: 25 },
+        { action: "has breakfast", time: 35 },
+        { action: "does chores", time: 40 },
+        { action: "reads", time: 55 },
+        { action: "leaves for school", time: 20 }
+      ]
+    },
+    {
+      setup: "begins activities at 2:35 PM",
+      events: [
+        { action: "does homework", time: 55 },
+        { action: "practices instrument", time: 40 },
+        { action: "has a snack", time: 20 },
+        { action: "plays games", time: 65 }
+      ]
+    }
+  ];
+
+  const scenarios = difficulty === 'easy' ? easyScenarios :
+                    difficulty === 'medium' ? mediumScenarios : hardScenarios;
+
   const name = ["Ben", "Amy", "Sam", "Kate", "Max", "Zoe"][Math.floor(Math.random() * 6)];
   const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   
@@ -293,6 +431,7 @@ const exports = {
   generateTimeDifference,
   generateScheduleProblem,
   generateClockAngles,
+  generateSetClock,
   generateTimeWordProblem
 };
 
