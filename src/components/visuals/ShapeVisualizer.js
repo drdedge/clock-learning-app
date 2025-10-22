@@ -169,11 +169,30 @@ const ShapeVisualizer = ({
     }
   };
 
-  const currentShape = enable3D ? shapes3D[shapeType] : shapes2D[shapeType];
+  // Map shape names to handle different naming conventions
+  const normalizeShapeName = (name) => {
+    const nameMap = {
+      'triangular prism': 'triangularPrism',
+      'triangularprism': 'triangularPrism',
+      'triangular-prism': 'triangularPrism'
+    };
+    return nameMap[name.toLowerCase()] || name;
+  };
+
+  const normalizedShapeType = normalizeShapeName(shapeType);
+  const currentShape = enable3D ? shapes3D[normalizedShapeType] : shapes2D[normalizedShapeType];
 
   // Draw 2D shape
   const draw2DShape = (ctx) => {
-    if (!currentShape) return;
+    if (!currentShape) {
+      // Shape not found - display error message
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = currentTheme.text;
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Shape "${shapeType}" not found`, size / 2, size / 2);
+      return;
+    }
 
     ctx.clearRect(0, 0, size, size);
     ctx.save();
@@ -264,7 +283,15 @@ const ShapeVisualizer = ({
 
   // Draw 3D shape (simplified isometric view)
   const draw3DShape = (ctx) => {
-    if (!currentShape) return;
+    if (!currentShape) {
+      // Shape not found - display error message
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = currentTheme.text;
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`3D Shape "${shapeType}" not found`, size / 2, size / 2);
+      return;
+    }
 
     ctx.clearRect(0, 0, size, size);
     ctx.save();
@@ -558,7 +585,7 @@ const ShapeVisualizer = ({
 
   // Handle vertex selection in build mode
   const handleCanvasClick = (e) => {
-    if (mode !== 'build' || !currentShape.points) return;
+    if (mode !== 'build' || !currentShape || !currentShape.points) return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
