@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/clock-learning-app/static/css/main.efb64040.css",
-    "main.js": "/clock-learning-app/static/js/main.277efac4.js",
+    "main.js": "/clock-learning-app/static/js/main.14bdbf40.js",
     "static/js/239.524051c8.chunk.js": "/clock-learning-app/static/js/239.524051c8.chunk.js",
     "static/js/977.032cee08.chunk.js": "/clock-learning-app/static/js/977.032cee08.chunk.js",
     "static/js/455.944875d4.chunk.js": "/clock-learning-app/static/js/455.944875d4.chunk.js",
     "index.html": "/clock-learning-app/index.html",
     "main.efb64040.css.map": "/clock-learning-app/static/css/main.efb64040.css.map",
-    "main.277efac4.js.map": "/clock-learning-app/static/js/main.277efac4.js.map",
+    "main.14bdbf40.js.map": "/clock-learning-app/static/js/main.14bdbf40.js.map",
     "239.524051c8.chunk.js.map": "/clock-learning-app/static/js/239.524051c8.chunk.js.map",
     "977.032cee08.chunk.js.map": "/clock-learning-app/static/js/977.032cee08.chunk.js.map",
     "455.944875d4.chunk.js.map": "/clock-learning-app/static/js/455.944875d4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.efb64040.css",
-    "static/js/main.277efac4.js"
+    "static/js/main.14bdbf40.js"
   ]
 }
